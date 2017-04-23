@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().hide();
         mDrawerLayout.openDrawer(GravityCompat.START, false);
 
-        boolean keepShadowOnHandle = true;
+        boolean keepShadowOnHandle = false;
         int drawerGravity = GravityCompat.START; // or GravityCompat.END
         mCustomDrawerToggle = new DrawerLayoutEdgeToggle(this,
                 mDrawerLayout,

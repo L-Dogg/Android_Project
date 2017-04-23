@@ -42,23 +42,6 @@ import com.nineoldandroids.animation.ValueAnimator;
 import com.nineoldandroids.animation.ValueAnimator.AnimatorUpdateListener;
 import com.nineoldandroids.view.ViewHelper;
 
-/* Author: Nikola Despotoski
- * Email: nikola[dot]despotoski(at)gmail[dot]com
- *
- *   Copyright (c) 2012 Nikola Despotoski
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
 @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
 
@@ -119,9 +102,9 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
     private FrameLayout rootLayout;
     private Drawable mCurrentDrawable;
     private int mScreenWidth;
-    private float mTopPercentage;
+    private float mTopPercentage = 50;
     private int mPreviousX=0;
-    private int mY = 0;
+    private int mY = 960; //TODO: fix hardcoded y
     public DrawerLayoutEdgeToggle(Activity a, DrawerLayout l, int drawerOpen, int drawerClose, boolean keepShadowOnHandle, int drawerGravity){
 
         Log.wtf(TAG, "constructor");
@@ -154,6 +137,8 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
         rootLayout.addView(mHandle, new FrameLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT,drawerGravity));
         mKeepShadowOnHandle = keepShadowOnHandle;
         mCurrentDrawable = mCloseDrawable;
+        mTopPercentage = 50;
+        updateHandleVerticalPosition();
     }
 
     public void setOverrideDefaultHandleAction(boolean ok){
@@ -176,9 +161,8 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
         mCurrentDrawable = mCloseDrawable;
         ViewHelper.setX(mHandle, mGravity == GravityCompat.END || mGravity == Gravity.RIGHT? getScreenWidth() : 0);
         ViewHelper.setY(mHandle, mY);
-
-
     }
+
     @SuppressWarnings("deprecation")
     @SuppressLint("NewApi")
     private void removeOnGlobalLayoutListener(View v, ViewTreeObserver.OnGlobalLayoutListener listener){
@@ -267,9 +251,15 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
         }
         float decimal = mTopPercentage/100;
         int screenHeight = mActivity.findViewById(android.R.id.content).getHeight();
+
+        if (screenHeight == 0)
+            return;
+
+        Log.wtf(TAG, "screenHeight = " + screenHeight);
         int y = (int) (screenHeight - (screenHeight * decimal));
         y = screenHeight-y;
-        mHandle.setY(screenHeight-y);
+        Log.wtf(TAG, "y = " + y);
+		mHandle.setY(screenHeight-y);
     }
     private void noShadow(){
         mCloseDrawable.setAlpha(MAX_ALPHA);
@@ -358,10 +348,7 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
         int actionBarHeight = 0;
         if (mActivity.getTheme().resolveAttribute(android.R.attr.actionBarSize, tv, true))
             actionBarHeight = TypedValue.complexToDimensionPixelSize(tv.data,mActivity.getResources().getDisplayMetrics());
-        else if(actionBarHeight == 0 && mActivity instanceof ActionBarActivity){
-            Log.wtf("DrawerLayoutHandle", "shit itself");
-            actionBarHeight = 25;
-        }else{
+        else{
             actionBarHeight = iterateAttributesForActionBarSherlock();
         }
         Log.wtf("DrawerLayoutHandle", "actionBarHeight = " + actionBarHeight);
