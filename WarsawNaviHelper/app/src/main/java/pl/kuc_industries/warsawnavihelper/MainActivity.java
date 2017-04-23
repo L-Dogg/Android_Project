@@ -85,6 +85,7 @@ public class MainActivity extends AppCompatActivity
 
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private DrawerLayoutEdgeToggle mCustomDrawerToggle;
     private String mActivityTitle;
     private String[] items;
 
@@ -124,6 +125,33 @@ public class MainActivity extends AppCompatActivity
 
         getSupportActionBar().hide();
         drawer.openDrawer(GravityCompat.START, false);
+
+        boolean keepShadowOnHandle = true;
+        int drawerGravity = GravityCompat.END; // or GravityCompat.END
+        mCustomDrawerToggle = new DrawerLayoutEdgeToggle(this,
+                mDrawerLayout,
+                R.drawable.ic_speaker_dark,
+                R.drawable.ic_speaker_dark,
+                keepShadowOnHandle,
+                drawerGravity){
+
+            @Override
+            public void onDrawerClosed(View arg0) {
+                super.onDrawerClosed(arg0); //must call super
+            }
+
+            @Override
+            public void onDrawerOpened(View arg0) {
+                super.onDrawerOpened(arg0); //must call super
+            }
+
+            @Override
+            public void onDrawerSlide(View arg0, float slideOffset) {
+                super.onDrawerSlide(arg0, slideOffset); //must call super
+
+            }};
+        mDrawerLayout.setDrawerListener(mCustomDrawerToggle);
+
 
         mAddressRequested = true;
         mAddressOutput = "";
