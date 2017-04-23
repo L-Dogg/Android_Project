@@ -7,13 +7,16 @@ import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.os.ResultReceiver;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -74,13 +77,21 @@ public class MainActivity extends AppCompatActivity
     protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
     protected final static String KEY_LOCATION = "location";
     protected final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
+    protected static final String ADDRESS_REQUESTED_KEY = "address-request-pending";
+    protected static final String LOCATION_ADDRESS_KEY = "location-address";
 
     protected GoogleApiClient mGoogleApiClient;
     protected GoogleMap mGoogleMap;
+
     protected LocationRequest mLocationRequest;
     protected LocationSettingsRequest mLocationSettingsRequest;
     protected Location mCurrentLocation;
+    protected String mAddressOutput;
+    private AddressResultReceiver mResultReceiver;
+
     protected Boolean mRequestingLocationUpdates;
+    protected Boolean mAddressRequested;
+
     protected String mLastUpdateTime;
 
     @Override
@@ -103,6 +114,9 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().hide();
         drawer.openDrawer(GravityCompat.START, false);
 
+        mResultReceiver = new AddressResultReceiver(new Handler());
+        mAddressRequested = true;
+        mAddressOutput = "";
         mRequestingLocationUpdates = true;
         mLastUpdateTime = "";
 
@@ -120,6 +134,7 @@ public class MainActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
         startLocationUpdates();
+        startIntentService();
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -128,12 +143,18 @@ public class MainActivity extends AppCompatActivity
                 mRequestingLocationUpdates = savedInstanceState.getBoolean(
                         KEY_REQUESTING_LOCATION_UPDATES);
             }
-
             if (savedInstanceState.keySet().contains(KEY_LOCATION)) {
                 mCurrentLocation = savedInstanceState.getParcelable(KEY_LOCATION);
             }
             if (savedInstanceState.keySet().contains(KEY_LAST_UPDATED_TIME_STRING)) {
                 mLastUpdateTime = savedInstanceState.getString(KEY_LAST_UPDATED_TIME_STRING);
+            }
+            if (savedInstanceState.keySet().contains(ADDRESS_REQUESTED_KEY)) {
+                mAddressRequested = savedInstanceState.getBoolean(ADDRESS_REQUESTED_KEY);
+            }
+            if (savedInstanceState.keySet().contains(LOCATION_ADDRESS_KEY)) {
+                mAddressOutput = savedInstanceState.getString(LOCATION_ADDRESS_KEY);
+                showToast(mAddressOutput);
             }
             updateUI();
         }
@@ -174,7 +195,6 @@ public class MainActivity extends AppCompatActivity
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
                         mRequestingLocationUpdates = false;
-                        updateUI();
                         break;
                 }
                 break;
@@ -247,7 +267,7 @@ public class MainActivity extends AppCompatActivity
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
             startLocationUpdates();
         }
-        updateUI();
+        //updateUI();
     }
 
     @Override
@@ -271,6 +291,14 @@ public class MainActivity extends AppCompatActivity
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
             updateUI();
+
+            if (!Geocoder.isPresent()) {
+                Toast.makeText(this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
+                return;
+            }
+            if (mAddressRequested) {
+                startIntentService();
+            }
         }
         if (mRequestingLocationUpdates) {
             Log.i(TAG, "in onConnected(), starting location updates");
@@ -279,9 +307,26 @@ public class MainActivity extends AppCompatActivity
 
     }
 
+    protected void startIntentService() {
+        // Create an intent for passing to the intent service responsible for fetching the address.
+        Intent intent = new Intent(this, FetchAddressIntentService.class);
+
+        // Pass the result receiver as an extra to the service.
+        intent.putExtra(Constants.RECEIVER, mResultReceiver);
+
+        // Pass the location data as an extra to the service.
+        intent.putExtra(Constants.LOCATION_DATA_EXTRA, mCurrentLocation);
+
+        // Start the service. If the service isn't already running, it is instantiated and started
+        // (creating a process for it if needed); if it is running then it remains running. The
+        // service kills itself automatically once all intents are processed.
+        startService(intent);
+    }
+
     @Override
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
+        mAddressRequested = true;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         updateUI();
     }
@@ -310,8 +355,6 @@ public class MainActivity extends AppCompatActivity
                 new LatLng(52.232222, 21.008333) :
                 new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
-        mGoogleMap.addMarker(new MarkerOptions().position(coords)
-                .title("Warsaw"));
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
@@ -321,6 +364,7 @@ public class MainActivity extends AppCompatActivity
         if(mCurrentLocation == null || mGoogleMap == null)
             return;
 
+        //showToast("Address: " + mAddressOutput);
         centerMapOnCurrentLocation();
     }
 
@@ -330,6 +374,7 @@ public class MainActivity extends AppCompatActivity
                 new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+        mGoogleMap.addMarker(new MarkerOptions().position(coords));
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
     }
@@ -357,5 +402,27 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    class AddressResultReceiver extends ResultReceiver {
+        public AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
+
+            // Show a toast message if an address was found.
+            if (resultCode == Constants.SUCCESS_RESULT) {
+                showToast("Found address: " + mAddressOutput);
+            }
+            mAddressRequested = false;
+            updateUI();
+        }
+    }
+
+    protected void showToast(String text) {
+        Toast.makeText(this, text, Toast.LENGTH_LONG).show();
     }
 }
