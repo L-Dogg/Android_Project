@@ -96,4 +96,20 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     public boolean isChildSelectable(int listPosition, int expandedListPosition) {
         return true;
     }
+
+    // getChildTypeCount() is necessary to alternate expandable list's items' layout!
+    @Override
+    public int getChildTypeCount () {
+        return 3;
+    }
+
+    // getChildTypeCount() is necessary to alternate expandable list's items' layout!
+    @Override
+    public int getChildType (int groupPosition, int childPosition) {
+    /*
+     * In case of group 1 this function returns 1,
+     * in case of group 2 it returns 2, and so on.
+     */
+        return groupPosition;
+    }
 }

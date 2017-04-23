@@ -42,17 +42,12 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.TreeMap;
 
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
-import pl.kuc_industries.warsawnavihelper.fragment.navigation.FragmentNavigationManager;
-import pl.kuc_industries.warsawnavihelper.fragment.navigation.NavigationManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -96,7 +91,6 @@ public class MainActivity extends AppCompatActivity
     private ExpandableListView mExpandableListView;
     private ExpandableListAdapter mExpandableListAdapter;
     private List<String> mExpandableListCategoriesTitles;
-    private NavigationManager mNavigationManager;
 
 
     @Override
@@ -115,7 +109,6 @@ public class MainActivity extends AppCompatActivity
         mExpandableListView = (ExpandableListView) findViewById(R.id.navList);
         mExpandableListCategoriesTitles = Arrays.asList(
                 getApplicationContext().getResources().getStringArray(R.array.menu_category));
-        mNavigationManager = FragmentNavigationManager.obtain(this);
 
         initItems();
         addDrawerItems();
