@@ -13,8 +13,6 @@ import pl.kuc_industries.warsawnavihelper.R;
 import java.util.List;
 import java.util.Map;
 
-import static pl.kuc_industries.warsawnavihelper.adapter.ItemTypes.TYPE_COUNT;
-
 public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
@@ -47,19 +45,28 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
                              boolean isLastChild,
                              View convertView,
                              ViewGroup parent) {
-        //final String expandedListText = (String) getChild(listPosition, expandedListPosition);
         if (convertView == null) {
-            convertView = mLayoutInflater.inflate(R.layout.list_item, null);
+            //convertView = mLayoutInflater.inflate(R.layout.tram_list_item, null);
+            int type = getChildType(listPosition, expandedListPosition);
+            switch(type) {
+                case ItemTypes.TRAMS_AND_BUSES:
+                    convertView = mLayoutInflater.inflate(R.layout.tram_list_item, null);
+                    break;
+                case ItemTypes.ATMS:
+                    convertView = mLayoutInflater.inflate(R.layout.atm_list_item, null);
+                    break;
+                //TODO: change after implementing new view
+                default:
+                    convertView = mLayoutInflater.inflate(R.layout.tram_list_item, null);
+                    break;
+            }
         }
-        TextView expandedListTextView = (TextView) convertView
-            .findViewById(R.id.expandedListItem);
-        expandedListTextView.setText("test"); //TODO: change
         return convertView;
     }
 
     @Override
     public int getChildrenCount(int listPosition) {
-        return 1;//TODO: change to real value
+        return 1;//TODO: might need change
     }
 
     @Override
@@ -81,6 +88,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     public View getGroupView(int listPosition, boolean isExpanded,
                              View convertView, ViewGroup parent) {
         String listTitle = (String) getGroup(listPosition);
+
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(R.layout.list_group, null);
         }
@@ -103,9 +111,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     // getChildTypeCount() is necessary to alternate expandable list's items' layout!
     @Override
-    public int getChildTypeCount () {
-        return ItemTypes.TYPE_COUNT;
-    }
+    public int getChildTypeCount () { return ItemTypes.TYPE_COUNT; }
 
     // getChildTypeCount() is necessary to alternate expandable list's items' layout!
     @Override
