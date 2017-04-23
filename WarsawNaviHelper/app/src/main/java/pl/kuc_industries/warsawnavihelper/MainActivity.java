@@ -322,7 +322,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLocationChanged(Location location) {
+        Location prevState = mCurrentLocation;
         mCurrentLocation = location;
+        // Center map on first obtained data:
+        if (prevState == null)
+            centerMapOnCurrentLocation();
+        
         mAddressRequested = true;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         startIntentService();
