@@ -16,7 +16,7 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.os.ResultReceiver;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -51,6 +51,7 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
@@ -88,6 +89,7 @@ public class MainActivity extends AppCompatActivity
     protected Location mCurrentLocation;
     protected String mAddressOutput;
     private AddressResultReceiver mResultReceiver;
+    private Marker mCurrentLocationMarker;
 
     protected Boolean mRequestingLocationUpdates;
     protected Boolean mAddressRequested;
@@ -97,6 +99,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mResultReceiver = new AddressResultReceiver(new Handler());
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -114,7 +118,6 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().hide();
         drawer.openDrawer(GravityCompat.START, false);
 
-        mResultReceiver = new AddressResultReceiver(new Handler());
         mAddressRequested = true;
         mAddressOutput = "";
         mRequestingLocationUpdates = true;
@@ -127,14 +130,13 @@ public class MainActivity extends AppCompatActivity
         createLocationRequest();
         buildLocationSettingsRequest();
 
-        Log.d(TAG, "onCreate() before new fragment");
+        Log.wtf(TAG, "onCreate() before new fragment");
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         startLocationUpdates();
-        startIntentService();
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -291,36 +293,30 @@ public class MainActivity extends AppCompatActivity
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
             updateUI();
-
-            if (!Geocoder.isPresent()) {
-                Toast.makeText(this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
-                return;
-            }
-            if (mAddressRequested) {
-                startIntentService();
-            }
         }
         if (mRequestingLocationUpdates) {
             Log.i(TAG, "in onConnected(), starting location updates");
             startLocationUpdates();
         }
+        if (!Geocoder.isPresent()) {
+            Toast.makeText(this, R.string.no_geocoder_available, Toast.LENGTH_LONG).show();
+            return;
 
+        }
+        if (mAddressRequested) {
+            startIntentService();
+        }
     }
 
     protected void startIntentService() {
-        // Create an intent for passing to the intent service responsible for fetching the address.
+        Log.wtf(TAG, "startIntentService() - begin");
+
         Intent intent = new Intent(this, FetchAddressIntentService.class);
-
-        // Pass the result receiver as an extra to the service.
         intent.putExtra(Constants.RECEIVER, mResultReceiver);
-
-        // Pass the location data as an extra to the service.
         intent.putExtra(Constants.LOCATION_DATA_EXTRA, mCurrentLocation);
-
-        // Start the service. If the service isn't already running, it is instantiated and started
-        // (creating a process for it if needed); if it is running then it remains running. The
-        // service kills itself automatically once all intents are processed.
         startService(intent);
+
+        Log.wtf(TAG, "startIntentService() - end (after startService())");
     }
 
     @Override
@@ -328,6 +324,7 @@ public class MainActivity extends AppCompatActivity
         mCurrentLocation = location;
         mAddressRequested = true;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
+        startIntentService();
         updateUI();
     }
 
@@ -345,6 +342,8 @@ public class MainActivity extends AppCompatActivity
         savedInstanceState.putBoolean(KEY_REQUESTING_LOCATION_UPDATES, mRequestingLocationUpdates);
         savedInstanceState.putParcelable(KEY_LOCATION, mCurrentLocation);
         savedInstanceState.putString(KEY_LAST_UPDATED_TIME_STRING, mLastUpdateTime);
+        savedInstanceState.putBoolean(ADDRESS_REQUESTED_KEY, mAddressRequested);
+        savedInstanceState.putString(LOCATION_ADDRESS_KEY, mAddressOutput);
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -374,7 +373,9 @@ public class MainActivity extends AppCompatActivity
                 new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-        mGoogleMap.addMarker(new MarkerOptions().position(coords));
+        if (mCurrentLocationMarker != null)
+            mCurrentLocationMarker.remove();
+        mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions().position(coords));
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
     }
@@ -413,9 +414,11 @@ public class MainActivity extends AppCompatActivity
         protected void onReceiveResult(int resultCode, Bundle resultData) {
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
 
+            Log.wtf(TAG, "onReceiveResult(), mAddressOutput = " + mAddressOutput);
+
             // Show a toast message if an address was found.
             if (resultCode == Constants.SUCCESS_RESULT) {
-                showToast("Found address: " + mAddressOutput);
+                //showToast("Found address: " + mAddressOutput);
             }
             mAddressRequested = false;
             updateUI();

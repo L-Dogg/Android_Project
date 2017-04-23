@@ -53,7 +53,7 @@ public class FetchAddressIntentService extends IntentService {
     @Override
     protected void onHandleIntent(Intent intent) {
         String errorMessage = "";
-
+        Log.wtf(TAG, "onHandleIntent()");
         mReceiver = intent.getParcelableExtra(Constants.RECEIVER);
 
         // Check if receiver was properly registered.
@@ -101,11 +101,11 @@ public class FetchAddressIntentService extends IntentService {
         } catch (IOException ioException) {
             // Catch network or other I/O problems.
             errorMessage = getString(R.string.service_not_available);
-            Log.e(TAG, errorMessage, ioException);
+            Log.wtf(TAG, errorMessage, ioException);
         } catch (IllegalArgumentException illegalArgumentException) {
             // Catch invalid latitude or longitude values.
             errorMessage = getString(R.string.invalid_lat_long_used);
-            Log.e(TAG, errorMessage + ". " +
+            Log.wtf(TAG, errorMessage + ". " +
                     "Latitude = " + location.getLatitude() +
                     ", Longitude = " + location.getLongitude(), illegalArgumentException);
         }
@@ -114,7 +114,7 @@ public class FetchAddressIntentService extends IntentService {
         if (addresses == null || addresses.size()  == 0) {
             if (errorMessage.isEmpty()) {
                 errorMessage = getString(R.string.no_address_found);
-                Log.e(TAG, errorMessage);
+                Log.wtf(TAG, errorMessage);
             }
             deliverResultToReceiver(Constants.FAILURE_RESULT, errorMessage);
         } else {
@@ -133,7 +133,7 @@ public class FetchAddressIntentService extends IntentService {
             for(int i = 0; i < address.getMaxAddressLineIndex(); i++) {
                 addressFragments.add(address.getAddressLine(i));
             }
-            Log.i(TAG, getString(R.string.address_found));
+            Log.wtf(TAG, getString(R.string.address_found));
             deliverResultToReceiver(Constants.SUCCESS_RESULT,
                     TextUtils.join(System.getProperty("line.separator"), addressFragments));
         }

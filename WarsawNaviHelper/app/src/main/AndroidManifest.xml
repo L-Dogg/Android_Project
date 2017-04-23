@@ -21,15 +21,13 @@
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
-        <!--<service
+        <service
             android:name=".FetchAddressIntentService"
-            android:exported="false"/>-->
-
+            android:exported="false"/>
     </application>
 
 
