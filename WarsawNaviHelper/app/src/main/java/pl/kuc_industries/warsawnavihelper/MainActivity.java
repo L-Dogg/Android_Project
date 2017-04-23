@@ -41,6 +41,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.location.LocationSettingsRequest;
 import com.google.android.gms.location.LocationSettingsResult;
 import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -75,6 +76,7 @@ public class MainActivity extends AppCompatActivity
     protected final static String KEY_LAST_UPDATED_TIME_STRING = "last-updated-time-string";
 
     protected GoogleApiClient mGoogleApiClient;
+    protected GoogleMap mGoogleMap;
     protected LocationRequest mLocationRequest;
     protected LocationSettingsRequest mLocationSettingsRequest;
     protected Location mCurrentLocation;
@@ -303,21 +305,33 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng sydney = new LatLng(-33.852, 151.211);
-        googleMap.addMarker(new MarkerOptions().position(sydney)
-                .title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        mGoogleMap = googleMap;
+        LatLng coords = (mCurrentLocation == null) ?
+                new LatLng(52.232222, 21.008333) :
+                new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+
+        mGoogleMap.addMarker(new MarkerOptions().position(coords)
+                .title("Warsaw"));
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
+        mGoogleMap.animateCamera(zoom);
     }
 
     private void updateUI() {
-        if(mCurrentLocation == null)
+        if(mCurrentLocation == null || mGoogleMap == null)
             return;
 
-        Toast.makeText(this.getApplicationContext(),
-                "LAT: " +  mCurrentLocation.getLatitude() + " LON: " + mCurrentLocation.getLongitude(),
-                Toast.LENGTH_LONG);
+        centerMapOnCurrentLocation();
+    }
 
+    public void centerMapOnCurrentLocation()
+    {
+        LatLng coords =
+                new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
+        CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
+        mGoogleMap.animateCamera(zoom);
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
