@@ -43,12 +43,14 @@ import com.google.android.gms.maps.model.Marker;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
-import pl.kuc_industries.warsawnavihelper.datasource.ExpandableListDataSource;
 import pl.kuc_industries.warsawnavihelper.fragment.navigation.FragmentNavigationManager;
 import pl.kuc_industries.warsawnavihelper.fragment.navigation.NavigationManager;
 
@@ -93,9 +95,9 @@ public class MainActivity extends AppCompatActivity
 
     private ExpandableListView mExpandableListView;
     private ExpandableListAdapter mExpandableListAdapter;
-    private List<String> mExpandableListTitle;
+    private List<String> mExpandableListCategoriesTitles;
     private NavigationManager mNavigationManager;
-    private Map<String, List<String>> mExpandableListData;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -111,9 +113,9 @@ public class MainActivity extends AppCompatActivity
         mActivityTitle = getTitle().toString();
 
         mExpandableListView = (ExpandableListView) findViewById(R.id.navList);
+        mExpandableListCategoriesTitles = Arrays.asList(
+                getApplicationContext().getResources().getStringArray(R.array.menu_category));
         mNavigationManager = FragmentNavigationManager.obtain(this);
-        mExpandableListData = ExpandableListDataSource.getData(this);
-        mExpandableListTitle = new ArrayList(mExpandableListData.keySet());
 
         initItems();
         addDrawerItems();
@@ -153,47 +155,21 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void initItems() {
-        items = getResources().getStringArray(R.array.film_genre);
+        items = getResources().getStringArray(R.array.menu_category);
     }
 
     private void addDrawerItems() {
-        mExpandableListAdapter = new CustomExpandableListAdapter(this, mExpandableListTitle, mExpandableListData);
+        mExpandableListAdapter = new CustomExpandableListAdapter(this,
+                                        mExpandableListCategoriesTitles,
+                                        new TreeMap<String, List<String>>());
         mExpandableListView.setAdapter(mExpandableListAdapter);
-        mExpandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
-            @Override
-            public void onGroupExpand(int groupPosition) {
-                getSupportActionBar().setTitle(mExpandableListTitle.get(groupPosition).toString());
-            }
-        });
-
-        mExpandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
-            @Override
-            public void onGroupCollapse(int groupPosition) {
-                getSupportActionBar().setTitle(R.string.film_genres);
-            }
-        });
-
         mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
             public boolean onChildClick(ExpandableListView parent, View v,
                                         int groupPosition, int childPosition, long id) {
-                String selectedItem = ((List) (mExpandableListData.get(mExpandableListTitle.get(groupPosition))))
-                        .get(childPosition).toString();
-                getSupportActionBar().setTitle(selectedItem);
+                /*String selectedItem = ((List) (mExpandableListData.get(mExpandableListTitle.get(groupPosition))))
+                        .get(childPosition).toString();*/
 
-                if (items[0].equals(mExpandableListTitle.get(groupPosition))) {
-                    mNavigationManager.showFragmentAction(selectedItem);
-                } else if (items[1].equals(mExpandableListTitle.get(groupPosition))) {
-                    mNavigationManager.showFragmentComedy(selectedItem);
-                } else if (items[2].equals(mExpandableListTitle.get(groupPosition))) {
-                    mNavigationManager.showFragmentDrama(selectedItem);
-                } else if (items[3].equals(mExpandableListTitle.get(groupPosition))) {
-                    mNavigationManager.showFragmentMusical(selectedItem);
-                } else if (items[4].equals(mExpandableListTitle.get(groupPosition))) {
-                    mNavigationManager.showFragmentThriller(selectedItem);
-                } else {
-                    throw new IllegalArgumentException("Not supported fragment type");
-                }
 
                 mDrawerLayout.closeDrawer(GravityCompat.START);
                 return false;
@@ -505,7 +481,7 @@ public class MainActivity extends AppCompatActivity
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle(R.string.film_genres);
+                getSupportActionBar().setTitle(R.string.menu_categories);
                 invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
             }
 
