@@ -292,7 +292,8 @@ public class MainActivity extends AppCompatActivity
         if (mCurrentLocation == null) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-            updateUI();
+            //updateUI();
+            centerMapOnCurrentLocation();
         }
         if (mRequestingLocationUpdates) {
             Log.i(TAG, "in onConnected(), starting location updates");
@@ -350,6 +351,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        googleMap.setMyLocationEnabled(true);
         LatLng coords = (mCurrentLocation == null) ?
                 new LatLng(52.232222, 21.008333) :
                 new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
@@ -364,7 +366,7 @@ public class MainActivity extends AppCompatActivity
             return;
 
         //showToast("Address: " + mAddressOutput);
-        centerMapOnCurrentLocation();
+        //centerMapOnCurrentLocation();
     }
 
     public void centerMapOnCurrentLocation()
@@ -373,9 +375,9 @@ public class MainActivity extends AppCompatActivity
                 new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-        if (mCurrentLocationMarker != null)
+        /*if (mCurrentLocationMarker != null)
             mCurrentLocationMarker.remove();
-        mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions().position(coords));
+        mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions().position(coords));*/
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
     }
