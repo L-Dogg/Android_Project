@@ -62,6 +62,8 @@ import com.nineoldandroids.view.ViewHelper;
 @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
 
+    private static final String TAG = "DrawerLayoutEdgeToggle";
+
     public static final int HANDLE_CENTER = 50; //percents of the y-axis
     public static final int HANDLE_TOP = 0;
     public static final int HANDLE_BOTTOM = 100;
@@ -104,8 +106,6 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
             MotionEvent copy = MotionEvent.obtain(event);
             copy.setEdgeFlags(ViewDragHelper.EDGE_ALL);
             copy.setLocation(mDrawerLayout.isDrawerOpen(GravityCompat.START)? event.getX() : event.getX() - mInitialX, event.getY());
-            //	Log.i("copy.getRawX()", ""+copy.getRawX());
-            //	Log.i("View x ", " "+ViewHelper.getX(mHandle));
             mDrawerLayout.onTouchEvent(copy);
             return mHandleTouchListener != null?  mHandleTouchListener.onTouch(v, event) :false;
 
@@ -124,6 +124,7 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
     private int mY = 0;
     public DrawerLayoutEdgeToggle(Activity a, DrawerLayout l, int drawerOpen, int drawerClose, boolean keepShadowOnHandle, int drawerGravity){
 
+        Log.wtf(TAG, "constructor");
         if(drawerGravity != GravityCompat.END && drawerGravity != GravityCompat.START && drawerGravity != Gravity.LEFT && drawerGravity != Gravity.RIGHT )
             throw new IllegalArgumentException("Use: GravityCompat.END, GravityCompat.START, Gravity.LEFT or Gravity.RIGHT for drawerGravity parameter");
         mGravity = drawerGravity;
@@ -170,6 +171,7 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
 
     @Override
     public void onDrawerClosed(View arg0) {
+        Log.wtf(TAG, "onDrawerClosed");
         mHandle.setImageDrawable(mCloseDrawable);
         mCurrentDrawable = mCloseDrawable;
         ViewHelper.setX(mHandle, mGravity == GravityCompat.END || mGravity == Gravity.RIGHT? getScreenWidth() : 0);
@@ -184,6 +186,7 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
     }
     @Override
     public void onDrawerOpened(View arg0) {
+        Log.wtf(TAG, "onDrawerOpened");
         mHandle.setImageDrawable(mOpenDrawable);
         mCurrentDrawable = mOpenDrawable;
     }
@@ -196,9 +199,9 @@ public class DrawerLayoutEdgeToggle implements DrawerLayout.DrawerListener{
 
     @Override
     public void onDrawerSlide(View arg0, float slideOffset) {
+        Log.wtf(TAG, "onDrawerSlide");
         getDrawerMinusShadow();
         final float translationX = checkForLeftDrawer(mGravity,slideOffset*mMinusShadow);
-        //  Log.i("translationX ", " "+translationX);
         if(Build.VERSION.SDK_INT >= 11){
             mHandle.setTranslationX(translationX);
             mHandle.setX(translationX);

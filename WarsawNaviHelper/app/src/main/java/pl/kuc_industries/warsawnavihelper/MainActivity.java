@@ -50,8 +50,7 @@ import java.util.TreeMap;
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener,
-        OnMapReadyCallback,
+    implements OnMapReadyCallback,
         ConnectionCallbacks,
         OnConnectionFailedListener,
         LocationListener {
@@ -77,7 +76,6 @@ public class MainActivity extends AppCompatActivity
     protected Location mCurrentLocation;
     protected String mAddressOutput;
     private AddressResultReceiver mResultReceiver;
-    private Marker mCurrentLocationMarker;
 
     protected Boolean mRequestingLocationUpdates;
     protected Boolean mAddressRequested;
@@ -113,45 +111,19 @@ public class MainActivity extends AppCompatActivity
         initItems();
         addDrawerItems();
         setupDrawer();
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.setDrawerListener(toggle);
-        toggle.syncState();
-/*
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);*/
-
         getSupportActionBar().hide();
-        drawer.openDrawer(GravityCompat.START, false);
+        mDrawerLayout.openDrawer(GravityCompat.START, false);
 
         boolean keepShadowOnHandle = true;
-        int drawerGravity = GravityCompat.END; // or GravityCompat.END
+        int drawerGravity = GravityCompat.START; // or GravityCompat.END
         mCustomDrawerToggle = new DrawerLayoutEdgeToggle(this,
                 mDrawerLayout,
-                R.drawable.ic_speaker_dark,
-                R.drawable.ic_speaker_dark,
+                R.mipmap.ic_launcher,
+                R.mipmap.ic_launcher,
                 keepShadowOnHandle,
-                drawerGravity){
-
-            @Override
-            public void onDrawerClosed(View arg0) {
-                super.onDrawerClosed(arg0); //must call super
-            }
-
-            @Override
-            public void onDrawerOpened(View arg0) {
-                super.onDrawerOpened(arg0); //must call super
-            }
-
-            @Override
-            public void onDrawerSlide(View arg0, float slideOffset) {
-                super.onDrawerSlide(arg0, slideOffset); //must call super
-
-            }};
+                drawerGravity);
         mDrawerLayout.setDrawerListener(mCustomDrawerToggle);
-
+        mCustomDrawerToggle.setVerticalTopOffset(0);
 
         mAddressRequested = true;
         mAddressOutput = "";
@@ -446,30 +418,7 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.animateCamera(zoom);
     }
 
-    @SuppressWarnings("StatementWithEmptyBody")
-    @Override
-    public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
-            // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
-
-        }
-
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.START);
-        return true;
-    }
 
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
