@@ -1,41 +1,30 @@
 package pl.kuc_industries.warsawnavihelper;
 
-import android.app.ActionBar;
 import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
 import android.os.ResultReceiver;
-import android.util.Log;
-import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.Menu;
+import android.util.Log;
 import android.view.MenuItem;
-import android.view.Window;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.TextView;
+import android.view.View;
+import android.widget.ExpandableListAdapter;
+import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.LocationListener;
@@ -47,19 +36,21 @@ import com.google.android.gms.location.LocationSettingsStatusCodes;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
-import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-import static pl.kuc_industries.warsawnavihelper.R.id.map;
+import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
+import pl.kuc_industries.warsawnavihelper.datasource.ExpandableListDataSource;
+import pl.kuc_industries.warsawnavihelper.fragment.navigation.FragmentNavigationManager;
+import pl.kuc_industries.warsawnavihelper.fragment.navigation.NavigationManager;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -93,8 +84,18 @@ public class MainActivity extends AppCompatActivity
 
     protected Boolean mRequestingLocationUpdates;
     protected Boolean mAddressRequested;
-
     protected String mLastUpdateTime;
+
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private String mActivityTitle;
+    private String[] items;
+
+    private ExpandableListView mExpandableListView;
+    private ExpandableListAdapter mExpandableListAdapter;
+    private List<String> mExpandableListTitle;
+    private NavigationManager mNavigationManager;
+    private Map<String, List<String>> mExpandableListData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -106,14 +107,26 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mActivityTitle = getTitle().toString();
+
+        mExpandableListView = (ExpandableListView) findViewById(R.id.navList);
+        mNavigationManager = FragmentNavigationManager.obtain(this);
+        mExpandableListData = ExpandableListDataSource.getData(this);
+        mExpandableListTitle = new ArrayList(mExpandableListData.keySet());
+
+        initItems();
+        addDrawerItems();
+        setupDrawer();
+
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
-
+/*
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        navigationView.setNavigationItemSelectedListener(this);*/
 
         getSupportActionBar().hide();
         drawer.openDrawer(GravityCompat.START, false);
@@ -137,6 +150,55 @@ public class MainActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
         startLocationUpdates();
+    }
+
+    private void initItems() {
+        items = getResources().getStringArray(R.array.film_genre);
+    }
+
+    private void addDrawerItems() {
+        mExpandableListAdapter = new CustomExpandableListAdapter(this, mExpandableListTitle, mExpandableListData);
+        mExpandableListView.setAdapter(mExpandableListAdapter);
+        mExpandableListView.setOnGroupExpandListener(new ExpandableListView.OnGroupExpandListener() {
+            @Override
+            public void onGroupExpand(int groupPosition) {
+                getSupportActionBar().setTitle(mExpandableListTitle.get(groupPosition).toString());
+            }
+        });
+
+        mExpandableListView.setOnGroupCollapseListener(new ExpandableListView.OnGroupCollapseListener() {
+            @Override
+            public void onGroupCollapse(int groupPosition) {
+                getSupportActionBar().setTitle(R.string.film_genres);
+            }
+        });
+
+        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
+            @Override
+            public boolean onChildClick(ExpandableListView parent, View v,
+                                        int groupPosition, int childPosition, long id) {
+                String selectedItem = ((List) (mExpandableListData.get(mExpandableListTitle.get(groupPosition))))
+                        .get(childPosition).toString();
+                getSupportActionBar().setTitle(selectedItem);
+
+                if (items[0].equals(mExpandableListTitle.get(groupPosition))) {
+                    mNavigationManager.showFragmentAction(selectedItem);
+                } else if (items[1].equals(mExpandableListTitle.get(groupPosition))) {
+                    mNavigationManager.showFragmentComedy(selectedItem);
+                } else if (items[2].equals(mExpandableListTitle.get(groupPosition))) {
+                    mNavigationManager.showFragmentDrama(selectedItem);
+                } else if (items[3].equals(mExpandableListTitle.get(groupPosition))) {
+                    mNavigationManager.showFragmentMusical(selectedItem);
+                } else if (items[4].equals(mExpandableListTitle.get(groupPosition))) {
+                    mNavigationManager.showFragmentThriller(selectedItem);
+                } else {
+                    throw new IllegalArgumentException("Not supported fragment type");
+                }
+
+                mDrawerLayout.closeDrawer(GravityCompat.START);
+                return false;
+            }
+        });
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -192,7 +254,6 @@ public class MainActivity extends AppCompatActivity
                 switch (resultCode) {
                     case Activity.RESULT_OK:
                         Log.i(TAG, "User agreed to make required location settings changes.");
-                        // Nothing to do. startLocationupdates() gets called in onResume again.
                         break;
                     case Activity.RESULT_CANCELED:
                         Log.i(TAG, "User chose not to make required location settings changes.");
@@ -293,7 +354,6 @@ public class MainActivity extends AppCompatActivity
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
             //updateUI();
-            centerMapOnCurrentLocation();
         }
         if (mRequestingLocationUpdates) {
             Log.i(TAG, "in onConnected(), starting location updates");
@@ -306,6 +366,9 @@ public class MainActivity extends AppCompatActivity
         }
         if (mAddressRequested) {
             startIntentService();
+        }
+        if (mCurrentLocation != null){
+            centerMapOnCurrentLocation();
         }
     }
 
@@ -322,7 +385,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLocationChanged(Location location) {
+        Location prevState = mCurrentLocation;
         mCurrentLocation = location;
+        // Center map on first obtained data:
+        if (prevState == null)
+            centerMapOnCurrentLocation();
+
         mAddressRequested = true;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         startIntentService();
@@ -429,5 +497,27 @@ public class MainActivity extends AppCompatActivity
 
     protected void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
+    }
+
+    private void setupDrawer() {
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                getSupportActionBar().setTitle(R.string.film_genres);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                getSupportActionBar().setTitle(mActivityTitle);
+                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
+            }
+        };
+
+        mDrawerToggle.setDrawerIndicatorEnabled(true);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 }
