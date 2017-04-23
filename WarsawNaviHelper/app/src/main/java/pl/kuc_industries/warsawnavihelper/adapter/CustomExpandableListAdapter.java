@@ -13,6 +13,8 @@ import pl.kuc_industries.warsawnavihelper.R;
 import java.util.List;
 import java.util.Map;
 
+import static pl.kuc_industries.warsawnavihelper.adapter.ItemTypes.TYPE_COUNT;
+
 public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     private Context mContext;
@@ -40,22 +42,24 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     }
 
     @Override
-    public View getChildView(int listPosition, final int expandedListPosition,
-                             boolean isLastChild, View convertView, ViewGroup parent) {
-        final String expandedListText = (String) getChild(listPosition, expandedListPosition);
+    public View getChildView(int listPosition,
+                             final int expandedListPosition,
+                             boolean isLastChild,
+                             View convertView,
+                             ViewGroup parent) {
+        //final String expandedListText = (String) getChild(listPosition, expandedListPosition);
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(R.layout.list_item, null);
         }
         TextView expandedListTextView = (TextView) convertView
             .findViewById(R.id.expandedListItem);
-        expandedListTextView.setText(expandedListText);
+        expandedListTextView.setText("test"); //TODO: change
         return convertView;
     }
 
     @Override
     public int getChildrenCount(int listPosition) {
-        return mExpandableListDetail.get(mExpandableListTitle.get(listPosition))
-            .size();
+        return 1;//TODO: change to real value
     }
 
     @Override
@@ -100,7 +104,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
     // getChildTypeCount() is necessary to alternate expandable list's items' layout!
     @Override
     public int getChildTypeCount () {
-        return 3;
+        return ItemTypes.TYPE_COUNT;
     }
 
     // getChildTypeCount() is necessary to alternate expandable list's items' layout!
@@ -112,4 +116,6 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
      */
         return groupPosition;
     }
+
+
 }

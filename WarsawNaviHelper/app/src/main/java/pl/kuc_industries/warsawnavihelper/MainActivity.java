@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity
     private ExpandableListAdapter mExpandableListAdapter;
     private List<String> mExpandableListCategoriesTitles;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
