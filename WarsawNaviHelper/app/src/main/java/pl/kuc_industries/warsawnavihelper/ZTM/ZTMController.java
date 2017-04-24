@@ -20,6 +20,7 @@ public class ZTMController implements Callback<TramBusQueryResult> {
     private static final String TAG = "ZTMController";
 
     private static final String BASE_URL = "https://api.um.warszawa.pl/api/action/";
+    private static final String RESOURCE_ID = "f2e5503e-927d-4ad3-9500-4ab9e55deb59";
     public void start() {
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -33,7 +34,7 @@ public class ZTMController implements Callback<TramBusQueryResult> {
         TramBusAPI tramBusAPI = retrofit.create(TramBusAPI.class);
 
         Call<TramBusQueryResult> call = tramBusAPI.getTrams(
-                "resource_id=f2e5503e-927d-4ad3-9500-4ab9e55deb59",
+                RESOURCE_ID,
                 Constants.UM_API_KEY,
                 1,
                 208,
@@ -46,6 +47,7 @@ public class ZTMController implements Callback<TramBusQueryResult> {
     public void onResponse(Call<TramBusQueryResult> call, Response<TramBusQueryResult> response) {
         if(response.isSuccessful()) {
             TramBusQueryResult result = response.body();
+            Log.wtf(TAG, response.toString());
             Log.wtf(TAG, "LAT: " + result.getLat() + " LON" + result.getLon());
             Log.wtf(TAG, "Time: " + result.getTime());
         } else {
