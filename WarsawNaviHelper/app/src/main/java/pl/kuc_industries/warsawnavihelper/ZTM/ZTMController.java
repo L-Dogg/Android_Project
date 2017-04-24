@@ -49,7 +49,7 @@ public class ZTMController implements Callback<TramBus> {
         if(response.isSuccessful()) {
             TramBus result = response.body();
             Log.wtf(TAG, response.toString());
-            Log.wtf(TAG, "GPS call time: " + result.getResult().get(0).getTime());
+            //Log.wtf(TAG, "GPS call time: " + result.getResult().get(0).getTime());
         } else {
             System.out.println(response.errorBody());
         }
