@@ -28,10 +28,28 @@ dependencies {
     compile 'com.android.support:support-v4:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
-    compile 'com.jakewharton:butterknife:8.5.1'
+    //compile 'com.jakewharton:butterknife:8.5.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.5.1'
     compile 'com.google.android.gms:play-services:10.2.1'
     compile 'com.squareup.retrofit2:retrofit:2.2.0'
     compile 'com.nineoldandroids:library:2.4.0+'
+
+    // MaterialDrawer providers below
+    compile('com.mikepenz:materialdrawer:5.9.0@aar') {
+        transitive = true
+    }
+    // icon fonts used inside the sample
+    // https://github.com/mikepenz/Android-Iconics
+    compile 'com.mikepenz:google-material-typeface:2.2.0.1@aar'
+    compile 'com.mikepenz:fontawesome-typeface:4.6.0.3@aar'
+    compile 'com.mikepenz:octicons-typeface:3.0.0.1@aar'
+    //used to provide different itemAnimators for the RecyclerView
+    //https://github.com/mikepenz/ItemAnimators
+    compile 'com.mikepenz:itemanimators:0.5.0@aar'
+    // used to provide the MiniDrawer to normal Drawer crossfade effect via a SlidingPane layout
+    // --> https://github.com/mikepenz/MaterialDrawer/blob/develop/app/src/main/java/com/mikepenz/materialdrawer/app/MiniDrawerActivity.java
+    // https://github.com/mikepenz/Crossfader
+    compile 'com.mikepenz:crossfader:1.5.0@aar'
+
     testCompile 'junit:junit:4.12'
 }

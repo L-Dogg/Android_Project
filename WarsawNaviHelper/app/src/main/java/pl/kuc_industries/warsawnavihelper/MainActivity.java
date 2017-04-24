@@ -8,14 +8,12 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
@@ -39,14 +37,19 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import com.mikepenz.google_material_typeface_library.GoogleMaterial;
+import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 
 import java.text.DateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
+import pl.kuc_industries.warsawnavihelper.DrawerItems.TramAndBusSecondaryDrawerItem;
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
 
 public class MainActivity extends AppCompatActivity
@@ -91,6 +94,8 @@ public class MainActivity extends AppCompatActivity
     private ExpandableListAdapter mExpandableListAdapter;
     private List<String> mExpandableListCategoriesTitles;
 
+    private Drawer result = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -101,29 +106,34 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mActivityTitle = getTitle().toString();
+        result = new DrawerBuilder()
+                .withActivity(this)
+                .withToolbar(toolbar)
+                .withHasStableIds(true)
+                .withItemAnimator(new AlphaCrossFadeAnimator())
+                .addDrawerItems(
+                        new ExpandableDrawerItem().withName("Tram and Bus").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
+                                new SecondaryDrawerItem().withName("Label1").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2002),
+                                new SecondaryDrawerItem().withName("Label 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2003),
+                                new TramAndBusSecondaryDrawerItem().withName("Spinner Item").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2004)
+                        ),
+                        new ExpandableDrawerItem().withName("ATM").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
+                                new SecondaryDrawerItem().withName("CollapsableItem").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2005),
+                                new SecondaryDrawerItem().withName("CollapsableItem 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2006),
+                                new TramAndBusSecondaryDrawerItem().withName("Spinner Item").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2007)
+                        )
+                )
+                .withSavedInstance(savedInstanceState)
+                .withShowDrawerOnFirstLaunch(true)
+                //.withShowDrawerUntilDraggedOpened(true)
+                .build();
 
-        mExpandableListView = (ExpandableListView) findViewById(R.id.navList);
-        mExpandableListCategoriesTitles = Arrays.asList(
-                getApplicationContext().getResources().getStringArray(R.array.menu_category));
-
-        initItems();
-        addDrawerItems();
-        setupDrawer();
         getSupportActionBar().hide();
-        mDrawerLayout.openDrawer(GravityCompat.START, false);
 
-        boolean keepShadowOnHandle = false;
-        int drawerGravity = GravityCompat.START; // or GravityCompat.END
-        mCustomDrawerToggle = new DrawerLayoutEdgeToggle(this,
-                mDrawerLayout,
-                R.mipmap.ic_launcher,
-                R.mipmap.ic_launcher,
-                keepShadowOnHandle,
-                drawerGravity);
-        mDrawerLayout.setDrawerListener(mCustomDrawerToggle);
-        mCustomDrawerToggle.setVerticalTopOffset(0);
+        if (savedInstanceState == null) {
+            // set the selection to the item with the identifier 11
+            result.setSelection(21, false);
+        }
 
         mAddressRequested = true;
         mAddressOutput = "";
@@ -442,38 +452,5 @@ public class MainActivity extends AppCompatActivity
 
     protected void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
-
-    private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle(R.string.menu_categories);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-    }
-
-    //TODO: get rid of magic numbers or remove this method after implementing MaterialDrawer
-    @Override
-    public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
-            mExpandableListView.setIndicatorBounds(mExpandableListView.getRight() - 70, mExpandableListView.getRight());
-        } else {
-            mExpandableListView.setIndicatorBoundsRelative(mExpandableListView.getRight() - 70, mExpandableListView.getRight());
-        }
     }
 }
