@@ -17,6 +17,8 @@
     <string name="selected_item">Selected item</string>
     <string name="menu_categories">Menu categories</string>
 
+
+
     <string-array name="menu_category">
         <item>Trams and Buses</item>
         <item>Veturilo</item>

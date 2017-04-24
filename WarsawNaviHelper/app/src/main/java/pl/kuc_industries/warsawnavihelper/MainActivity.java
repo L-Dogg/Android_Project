@@ -47,6 +47,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
+import pl.kuc_industries.warsawnavihelper.ZTM.ZTMController;
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
 
 public class MainActivity extends AppCompatActivity
@@ -234,6 +235,11 @@ public class MainActivity extends AppCompatActivity
 
     public void stopUpdatesButtonHandler(View view) {
         stopLocationUpdates();
+    }
+
+    public void findTramOrBusButtonHandler(View view) {
+        ZTMController controller = new ZTMController();
+        controller.start();
     }
 
     protected void startLocationUpdates() {

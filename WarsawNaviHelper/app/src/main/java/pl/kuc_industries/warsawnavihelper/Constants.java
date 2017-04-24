@@ -12,4 +12,7 @@ public final class Constants {
     public static final String RECEIVER = PACKAGE_NAME + ".RECEIVER";
     public static final String RESULT_DATA_KEY = PACKAGE_NAME + ".RESULT_DATA_KEY";
     public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME + ".LOCATION_DATA_EXTRA";
+
+    // TODO: use ProGuard or other API keys storing method:
+    public static final String UM_API_KEY = "b2404019-9b1d-4ff5-9969-af137b28c7da";
 }
