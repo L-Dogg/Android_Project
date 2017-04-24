@@ -466,6 +466,7 @@ public class MainActivity extends AppCompatActivity
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
+    //TODO: get rid of magic numbers or remove this method after implementing MaterialDrawer
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
