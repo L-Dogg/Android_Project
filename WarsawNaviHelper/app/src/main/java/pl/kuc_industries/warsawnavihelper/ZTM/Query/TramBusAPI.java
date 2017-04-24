@@ -11,6 +11,6 @@ public interface TramBusAPI {
             @Query("resource_id") String resource_id,
             @Query("apikey") String apikey,
             @Query("type") int type,
-            @Query("line") int line,
+            @Query("line") String line,
             @Query("brigade") int brigade);
 }
