@@ -465,4 +465,14 @@ public class MainActivity extends AppCompatActivity
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if(android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.JELLY_BEAN_MR2) {
+            mExpandableListView.setIndicatorBounds(mExpandableListView.getRight() - 70, mExpandableListView.getRight());
+        } else {
+            mExpandableListView.setIndicatorBoundsRelative(mExpandableListView.getRight() - 70, mExpandableListView.getRight());
+        }
+    }
 }

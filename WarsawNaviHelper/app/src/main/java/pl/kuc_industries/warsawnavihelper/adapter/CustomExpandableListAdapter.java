@@ -92,6 +92,7 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
         if (convertView == null) {
             convertView = mLayoutInflater.inflate(R.layout.list_group, null);
         }
+
         TextView listTitleTextView = (TextView) convertView
             .findViewById(R.id.listTitle);
         listTitleTextView.setTypeface(null, Typeface.BOLD);
@@ -115,13 +116,5 @@ public class CustomExpandableListAdapter extends BaseExpandableListAdapter {
 
     // getChildTypeCount() is necessary to alternate expandable list's items' layout!
     @Override
-    public int getChildType (int groupPosition, int childPosition) {
-    /*
-     * In case of group 1 this function returns 1,
-     * in case of group 2 it returns 2, and so on.
-     */
-        return groupPosition;
-    }
-
-
+    public int getChildType (int groupPosition, int childPosition) { return groupPosition; }
 }

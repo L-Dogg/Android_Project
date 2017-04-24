@@ -33,9 +33,8 @@
         android:layout_width="@dimen/nav_drawer_width"
         android:layout_height="match_parent"
         android:layout_gravity="left|start"
-        android:background="@color/white"
+        android:background="@color/transclucent_white"
         android:divider="@color/group_divider_color"
-        android:dividerHeight="@dimen/divider_height"
-        android:indicatorLeft="?android:attr/expandableListPreferredItemIndicatorLeft"/>
+        android:dividerHeight="@dimen/divider_height" />
 
 </android.support.v4.widget.DrawerLayout>
