@@ -1,10 +1,17 @@
 package pl.kuc_industries.warsawnavihelper.DrawerItems;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.database.DataSetObserver;
 import android.support.annotation.LayoutRes;
 import android.support.v7.widget.RecyclerView;
+import android.util.AttributeSet;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 
 import pl.kuc_industries.warsawnavihelper.R;
 import com.mikepenz.materialdrawer.model.BaseDrawerItem;
@@ -50,6 +57,9 @@ public class TramAndBusSecondaryDrawerItem extends BaseDrawerItem<TramAndBusSeco
             this.view = view;
             this.spinner = (Spinner) view.findViewById(R.id.spinner);
             this.icon = (ImageView) view.findViewById(R.id.material_drawer_icon);
+
+            spinner.setAdapter(new TramAndBusSpinnerAdapter(view.getContext(),
+                    R.layout.tram_and_bus_spinner_row, view.getResources().getStringArray(R.array.tram_lines)));
         }
     }
 }

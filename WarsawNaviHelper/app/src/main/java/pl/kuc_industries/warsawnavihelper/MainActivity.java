@@ -3,11 +3,13 @@ package pl.kuc_industries.warsawnavihelper;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -39,9 +41,12 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 
 import java.text.DateFormat;
@@ -53,7 +58,7 @@ import pl.kuc_industries.warsawnavihelper.DrawerItems.TramAndBusSecondaryDrawerI
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
 
 public class MainActivity extends AppCompatActivity
-    implements OnMapReadyCallback,
+        implements OnMapReadyCallback,
         ConnectionCallbacks,
         OnConnectionFailedListener,
         LocationListener {
@@ -106,11 +111,17 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        AccountHeader headerResult = new AccountHeaderBuilder()
+                .withActivity(this)
+                .withHeaderBackground(R.drawable.material_drawer_header)
+                .build();
+
         result = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
                 .withHasStableIds(true)
                 .withItemAnimator(new AlphaCrossFadeAnimator())
+                .withAccountHeader(headerResult)
                 .addDrawerItems(
                         new ExpandableDrawerItem().withName("Tram and Bus").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
                                 new SecondaryDrawerItem().withName("Label1").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2002),
@@ -162,8 +173,8 @@ public class MainActivity extends AppCompatActivity
 
     private void addDrawerItems() {
         mExpandableListAdapter = new CustomExpandableListAdapter(this,
-                                        mExpandableListCategoriesTitles,
-                                        new TreeMap<String, List<String>>());
+                mExpandableListCategoriesTitles,
+                new TreeMap<String, List<String>>());
         mExpandableListView.setAdapter(mExpandableListAdapter);
         mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
             @Override
@@ -345,7 +356,7 @@ public class MainActivity extends AppCompatActivity
         if (mAddressRequested) {
             startIntentService();
         }
-        if (mCurrentLocation != null){
+        if (mCurrentLocation != null) {
             centerMapOnCurrentLocation();
         }
     }
