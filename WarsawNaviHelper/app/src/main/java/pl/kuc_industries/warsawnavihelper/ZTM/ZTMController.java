@@ -1,16 +1,15 @@
 package pl.kuc_industries.warsawnavihelper.ZTM;
 
 import android.util.Log;
-import android.widget.Toast;
 
-import com.google.android.gms.common.api.Result;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import pl.kuc_industries.warsawnavihelper.Constants;
+import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ControllerProvider;
+import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
 import pl.kuc_industries.warsawnavihelper.ZTM.Query.TramBusAPI;
 import pl.kuc_industries.warsawnavihelper.ZTM.QueryResult.TramBus;
-import pl.kuc_industries.warsawnavihelper.ZTM.QueryResult.TramBusQueryResult;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -22,6 +21,14 @@ public class ZTMController implements Callback<TramBus> {
 
     private static final String BASE_URL = "https://api.um.warszawa.pl/api/action/";
     private static final String RESOURCE_ID = "f2e5503e-927d-4ad3-9500-4ab9e55deb59";
+
+    private TramBusAPI tramBusAPI;
+    private ZTM2ControllerProvider provider;
+
+    public ZTMController(ZTM2ControllerProvider provider) {
+        this.provider = provider;
+    }
+
     public void start() {
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -32,26 +39,15 @@ public class ZTMController implements Callback<TramBus> {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        TramBusAPI tramBusAPI = retrofit.create(TramBusAPI.class);
-
-        Call<TramBus> call = tramBusAPI.getTrams(
-                RESOURCE_ID,
-                Constants.UM_API_KEY,
-                ZTMVehicleType.Tram,
-                "9",
-                1);
-        call.enqueue(this);
-
+        tramBusAPI = retrofit.create(TramBusAPI.class);
     }
 
     @Override
     public void onResponse(Call<TramBus> call, Response<TramBus> response) {
         if(response.isSuccessful()) {
-            TramBus result = response.body();
-            Log.wtf(TAG, response.toString());
-            Log.wtf(TAG, "GPS call time: " + result.getResult().get(0).getTime());
+            provider.showOnMap(response.body());
         } else {
-            System.out.println(response.errorBody());
+            Log.wtf(TAG, response.errorBody().toString());
         }
     }
 
@@ -59,5 +55,25 @@ public class ZTMController implements Callback<TramBus> {
     public void onFailure(Call<TramBus> call, Throwable t) {
         t.printStackTrace();
         Log.wtf(TAG, t.getStackTrace().toString());
+    }
+
+    public void getTrams(int lineNumber) {
+        Call<TramBus> call = tramBusAPI.getTrams(
+                RESOURCE_ID,
+                Constants.UM_API_KEY,
+                ZTMVehicleType.Tram.getValue(),
+                String.valueOf(lineNumber),
+                null);
+        call.enqueue(this);
+    }
+
+    public void getBuses(int lineNumber) {
+        Call<TramBus> call = tramBusAPI.getTrams(
+                RESOURCE_ID,
+                Constants.UM_API_KEY,
+                ZTMVehicleType.Bus.getValue(),
+                String.valueOf(lineNumber),
+                null);
+        call.enqueue(this);
     }
 }

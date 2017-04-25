@@ -11,7 +11,7 @@ public interface TramBusAPI {
     Call<TramBus> getTrams(
             @Query("resource_id") String resource_id,
             @Query("apikey") String apikey,
-            @Query("type") ZTMVehicleType type,
+            @Query("type") int type,
             @Query("line") String line,
-            @Query("brigade") int brigade);
+            @Query("brigade") Integer brigade);
 }

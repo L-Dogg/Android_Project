@@ -47,6 +47,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
 
+import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
+import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.ZTM.ZTMController;
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
 
@@ -91,6 +93,7 @@ public class MainActivity extends AppCompatActivity
     private ExpandableListView mExpandableListView;
     private ExpandableListAdapter mExpandableListAdapter;
     private List<String> mExpandableListCategoriesTitles;
+    private ZTM2ViewProvider mProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -238,8 +241,8 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void findTramOrBusButtonHandler(View view) {
-        ZTMController controller = new ZTMController();
-        controller.start();
+        Log.wtf(TAG, "findTramOrBusButtonHandler invoking provider");
+        mProvider.getBuses(208);
     }
 
     protected void startLocationUpdates() {
@@ -393,6 +396,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
+        mProvider = new ZTM2MapProvider(mGoogleMap);
         googleMap.setMyLocationEnabled(true);
         LatLng coords = (mCurrentLocation == null) ?
                 new LatLng(52.232222, 21.008333) :
