@@ -1,0 +1,14 @@
+﻿<project version="2.2" name="Project" ID="01B4D83C-F5C3-4A97-9177-55B7A1AD23B2">
+  <params>
+    <pageParam version="4.5" minAllowVersion="4.5"/>
+    <projectParam version="2.2" minAllowVersion="2.2" platform="MtMobile" orientation="MoPortrait" mobileScreenScale="1.77777779102325" mobileType="mmtAndroid" pageSize="(360,640)" backgroundColor="4294967295" fontSize="0" fontFamily=""/>
+    <previewParam version="1.0"/>
+    <colorParam version="1.0"/>
+  </params>
+  <modules>
+    <page name="Start" ID="F652F03D-805C-4F3F-80D1-BE93449FD556" expanded="True" code="Q6oxNenqlD" thumbCode="Q6oxNenqlD" status="psWhite"/>
+    <page name="Map" ID="561CA278-A449-4B0D-92A2-A23BD4183746" expanded="True" code="htQtdZLdGq" thumbCode="hcRYUbjDCK" isLastOpen="True" status="psWhite"/>
+  </modules>
+  <masters/>
+  <images/>
+</project>
