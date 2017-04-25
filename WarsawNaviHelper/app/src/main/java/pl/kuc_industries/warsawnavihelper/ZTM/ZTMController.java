@@ -37,8 +37,8 @@ public class ZTMController implements Callback<TramBus> {
         Call<TramBus> call = tramBusAPI.getTrams(
                 RESOURCE_ID,
                 Constants.UM_API_KEY,
-                1,
-                "N44",
+                ZTMVehicleType.Tram,
+                "9",
                 1);
         call.enqueue(this);
 
