@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Warsaw Navi Helper</string>
 
+    <string name="pref_previously_started">previously_started</string>
+    <string name="pref_default_bank">default_bank</string>
+    <string name="pref_default_stop">default_stop</string>
+    
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
@@ -16,6 +20,10 @@
     <string name="drawer_close">Close navigation drawer</string>
     <string name="selected_item">Selected item</string>
     <string name="menu_categories">Menu categories</string>
+
+    <string name="choose_default_bank">Choose default bank:</string>
+    <string name="choose_default_stop">Choose default stop:</string>
+    <string name="confirm_default_settings">Confirm</string>
 
     <string-array name="menu_category">
         <item>Trams and Buses</item>
@@ -40,4 +48,11 @@
         <item>ING</item>
     </string-array>
 
+    <string-array name="stops">
+        <item>Centrum</item>
+        <item>Nowowiejska</item>
+        <item>Plac Politechniki</item>
+        <item>Wawelska</item>
+        <item>Metro Marymont</item>
+    </string-array>
 </resources>

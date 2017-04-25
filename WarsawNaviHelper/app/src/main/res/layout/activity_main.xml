@@ -20,7 +20,7 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="pl.kuc_industries.warsawnavihelper.MainActivity"
+        tools:context="pl.kuc_industries.warsawnavihelper.Activities.MainActivity"
         map:uiCompass="true"
         map:uiRotateGestures="true"
         map:uiScrollGestures="true"

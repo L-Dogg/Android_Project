@@ -1,4 +1,4 @@
-package pl.kuc_industries.warsawnavihelper;
+package pl.kuc_industries.warsawnavihelper.Activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -8,15 +8,10 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -46,11 +41,11 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 
 import java.text.DateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.TreeMap;
 
+import pl.kuc_industries.warsawnavihelper.Constants;
 import pl.kuc_industries.warsawnavihelper.DrawerItems.TramAndBusSecondaryDrawerItem;
-import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
+import pl.kuc_industries.warsawnavihelper.FetchAddressIntentService;
+import pl.kuc_industries.warsawnavihelper.R;
 
 public class MainActivity extends AppCompatActivity
     implements OnMapReadyCallback,
@@ -83,17 +78,6 @@ public class MainActivity extends AppCompatActivity
     protected Boolean mRequestingLocationUpdates;
     protected Boolean mAddressRequested;
     protected String mLastUpdateTime;
-
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayoutEdgeToggle mCustomDrawerToggle;
-    private String mActivityTitle;
-    private String[] items;
-
-    private ExpandableListView mExpandableListView;
-    private ExpandableListAdapter mExpandableListAdapter;
-    private List<String> mExpandableListCategoriesTitles;
-
     private Drawer result = null;
 
     @Override
@@ -154,29 +138,6 @@ public class MainActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
         startLocationUpdates();
-    }
-
-    private void initItems() {
-        items = getResources().getStringArray(R.array.menu_category);
-    }
-
-    private void addDrawerItems() {
-        mExpandableListAdapter = new CustomExpandableListAdapter(this,
-                                        mExpandableListCategoriesTitles,
-                                        new TreeMap<String, List<String>>());
-        mExpandableListView.setAdapter(mExpandableListAdapter);
-        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v,
-                                        int groupPosition, int childPosition, long id) {
-                /*String selectedItem = ((List) (mExpandableListData.get(mExpandableListTitle.get(groupPosition))))
-                        .get(childPosition).toString();*/
-
-
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-                return false;
-            }
-        });
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -240,10 +201,6 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
         }
-    }
-
-    public void stopUpdatesButtonHandler(View view) {
-        stopLocationUpdates();
     }
 
     protected void startLocationUpdates() {
