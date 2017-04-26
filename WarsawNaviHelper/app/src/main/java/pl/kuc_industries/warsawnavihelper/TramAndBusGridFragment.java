@@ -30,6 +30,14 @@ public class TramAndBusGridFragment extends AppCompatDialogFragment {
 
     private GridLayoutManager gridLayoutManager;
     private Context context;
+    /**
+     * Create a new instance of MyDialogFragment, providing "num"
+     * as an argument.
+     */
+    public static TramAndBusGridFragment newInstance() {
+        TramAndBusGridFragment instance = new TramAndBusGridFragment();
+        return instance;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,10 +66,9 @@ public class TramAndBusGridFragment extends AppCompatDialogFragment {
         boolean isOrientationLandscape = getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE;
         gridLayoutManager = new GridLayoutManager(context, isOrientationLandscape ? GRID_SPAN_COUNT_LANDSCAPE : GRID_SPAN_COUNT_PORTRAIT);
 
-        GridLayoutManager.
         List<TramAndBusLine> tramAndBusLines = getTramAndBusLineList();
         RecyclerView recyclerView = (RecyclerView) getView().findViewById(R.id.tram_and_bus_recycler_view);
-        TramAndBusGridAdapter tramAndBusGridAdapter = new TramAndBusGridAdapter(context, tramAndBusLines);
+        TramAndBusGridAdapter tramAndBusGridAdapter = new TramAndBusGridAdapter(context);
 
         recyclerView.setHasFixedSize(false);
         recyclerView.setLayoutManager(gridLayoutManager);
@@ -79,7 +86,7 @@ public class TramAndBusGridFragment extends AppCompatDialogFragment {
         }
     }
 
-    private List<TramAndBusLine> getTramAndBusLineList() {
+    public  List<TramAndBusLine> getTramAndBusLineList() {
         List<TramAndBusLine> tramAndBusLineList = new ArrayList<>();
         String[] tramAndBusLineNames = getResources().getStringArray(R.array.tram_lines);
 

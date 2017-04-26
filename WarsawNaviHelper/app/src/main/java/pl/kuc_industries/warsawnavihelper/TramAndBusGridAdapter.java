@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import pl.kuc_industries.warsawnavihelper.R;
@@ -21,9 +22,9 @@ public class TramAndBusGridAdapter extends RecyclerView.Adapter<TramAndBusGridAd
     private List<TramAndBusLine> tramAndBusLineList;
     private Context context;
 
-    public TramAndBusGridAdapter(Context context, List<TramAndBusLine> tramAndBusLineList) {
-        this.tramAndBusLineList = tramAndBusLineList;
+    public TramAndBusGridAdapter(Context context) {
         this.context = context;
+        this.tramAndBusLineList = getTramAndBusLineList();
     }
 
     @Override
@@ -61,5 +62,15 @@ public class TramAndBusGridAdapter extends RecyclerView.Adapter<TramAndBusGridAd
         public void onClick(View v) {
             Toast.makeText(v.getContext(), "Position = " + getLayoutPosition(), Toast.LENGTH_SHORT);
         }
+    }
+
+    private List<TramAndBusLine> getTramAndBusLineList() {
+        List<TramAndBusLine> tramAndBusLineList = new ArrayList<>();
+        String[] tramAndBusLineNames = context.getResources().getStringArray(R.array.tram_lines);
+
+        for (String tramAndBusLineName : tramAndBusLineNames) {
+            tramAndBusLineList.add(new TramAndBusLine(tramAndBusLineName));
+        }
+        return tramAndBusLineList;
     }
 }

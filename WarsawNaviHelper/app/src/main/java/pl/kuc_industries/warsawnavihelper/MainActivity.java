@@ -1,6 +1,7 @@
 package pl.kuc_industries.warsawnavihelper;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
@@ -10,10 +11,12 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -21,6 +24,7 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -48,6 +52,7 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.text.DateFormat;
 import java.util.Date;
@@ -126,6 +131,18 @@ public class MainActivity extends AppCompatActivity
                         new ExpandableDrawerItem().withName("Tram and Bus").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
                                 new SecondaryDrawerItem().withName("Label1").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2002),
                                 new SecondaryDrawerItem().withName("Label 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2003),
+                                new SecondaryDrawerItem().withName("TramsAndBuses").withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                    @Override
+                                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                        Context context = view.getContext();
+                                        new MaterialDialog.Builder(view.getContext()).
+                                                title("Select your lines").
+                                                adapter(new TramAndBusGridAdapter(context),
+                                                        new GridLayoutManager(context, 4)).
+                                                                show();
+                                        return true;
+                                    }
+                                }),
                                 new TramAndBusSecondaryDrawerItem().withName("Spinner Item").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2004)
                         ),
                         new ExpandableDrawerItem().withName("ATM").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(

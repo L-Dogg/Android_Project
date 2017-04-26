@@ -51,5 +51,9 @@ dependencies {
     // https://github.com/mikepenz/Crossfader
     compile 'com.mikepenz:crossfader:1.5.0@aar'
 
+    // library for MaterialDialogs
+    compile 'com.afollestad.material-dialogs:core:0.9.4.4'
+    compile 'com.afollestad.material-dialogs:commons:0.9.4.4'
+
     testCompile 'junit:junit:4.12'
 }
