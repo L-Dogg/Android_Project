@@ -10,6 +10,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.GravityCompat;
@@ -24,6 +25,7 @@ import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.afollestad.materialdialogs.StackingBehavior;
 import com.google.android.gms.common.ConnectionResult;
@@ -57,6 +59,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TreeMap;
@@ -108,6 +111,8 @@ public class MainActivity extends AppCompatActivity
     private ExpandableListAdapter mExpandableListAdapter;
     private List<String> mExpandableListCategoriesTitles;
 
+    private List<TramAndBusLine> mTramAndBusLines;
+
     private Drawer result = null;
 
     @Override
@@ -125,6 +130,8 @@ public class MainActivity extends AppCompatActivity
                 .withHeaderBackground(R.drawable.material_drawer_header)
                 .build();
 
+        mTramAndBusLines = getTramAndBusLineList();
+
         result = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(toolbar)
@@ -139,7 +146,7 @@ public class MainActivity extends AppCompatActivity
                                         Context context = view.getContext();
                                         new MaterialDialog.Builder(view.getContext()).
                                                 title("Select your tram lines").
-                                                adapter(new TramAndBusGridAdapter(context),
+                                                adapter(new TramAndBusGridAdapter(context, mTramAndBusLines),
                                                         new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
                                                 show();
                                         return true;
@@ -150,8 +157,8 @@ public class MainActivity extends AppCompatActivity
                                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                                         Context context = view.getContext();
                                         new MaterialDialog.Builder(view.getContext()).
-                                                title("Select your bus lines").
-                                                adapter(new TramAndBusGridAdapter(context),
+                                                title("Select your tram lines").
+                                                adapter(new TramAndBusGridAdapter(context, mTramAndBusLines),
                                                         new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
                                                 show();
                                         return true;
@@ -493,6 +500,16 @@ public class MainActivity extends AppCompatActivity
             mAddressRequested = false;
             updateUI();
         }
+    }
+
+    private List<TramAndBusLine> getTramAndBusLineList() {
+        List<TramAndBusLine> tramAndBusLineList = new ArrayList<>();
+        String[] tramAndBusLineNames = getResources().getStringArray(R.array.tram_lines);
+
+        for (String tramAndBusLineName : tramAndBusLineNames) {
+            tramAndBusLineList.add(new TramAndBusLine(tramAndBusLineName));
+        }
+        return tramAndBusLineList;
     }
 
     protected void showToast(String text) {

@@ -14,4 +14,6 @@
     <color name="purple">#B39DDB</color>
     <color name="pink">#F48FB1</color>
     <color name="transclucent_white">#B0FFFFFF</color>
+    <color name="tram_bus_line_visible_bg_color">#D3D3D3</color>
+    <color name="tram_bus_line_invisible_bg_color">#FFFFFF</color>
 </resources>
