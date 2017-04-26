@@ -1,24 +1,27 @@
 package pl.kuc_industries.warsawnavihelper;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ExpandableListAdapter;
 import android.widget.ExpandableListView;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -38,18 +41,27 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.plus.model.people.Person;
+import com.google.maps.android.clustering.Cluster;
+import com.google.maps.android.clustering.ClusterManager;
+import com.google.maps.android.clustering.view.DefaultClusterRenderer;
+import com.google.maps.android.ui.IconGenerator;
 
 import java.text.DateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleItem;
+import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ViewProvider;
-import pl.kuc_industries.warsawnavihelper.ZTM.ZTMController;
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
 
 public class MainActivity extends AppCompatActivity
@@ -73,6 +85,8 @@ public class MainActivity extends AppCompatActivity
 
     protected GoogleApiClient mGoogleApiClient;
     protected GoogleMap mGoogleMap;
+    private ClusterManager<VehicleItem> mClusterManager;
+
 
     protected LocationRequest mLocationRequest;
     protected LocationSettingsRequest mLocationSettingsRequest;
@@ -242,7 +256,8 @@ public class MainActivity extends AppCompatActivity
 
     public void findTramOrBusButtonHandler(View view) {
         Log.wtf(TAG, "findTramOrBusButtonHandler invoking provider");
-        mProvider.getBuses(208);
+        //mProvider.getBuses(208);
+        mProvider.getTrams(9);
     }
 
     protected void startLocationUpdates() {
@@ -396,7 +411,6 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap = googleMap;
-        mProvider = new ZTM2MapProvider(mGoogleMap);
         googleMap.setMyLocationEnabled(true);
         LatLng coords = (mCurrentLocation == null) ?
                 new LatLng(52.232222, 21.008333) :
@@ -405,14 +419,13 @@ public class MainActivity extends AppCompatActivity
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
+        setUpClusterer();
+        mProvider = new ZTM2MapProvider(mClusterManager);
     }
 
     private void updateUI() {
         if(mCurrentLocation == null || mGoogleMap == null)
             return;
-
-        //showToast("Address: " + mAddressOutput);
-        //centerMapOnCurrentLocation();
     }
 
     public void centerMapOnCurrentLocation()
@@ -421,9 +434,6 @@ public class MainActivity extends AppCompatActivity
                 new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
         CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
-        /*if (mCurrentLocationMarker != null)
-            mCurrentLocationMarker.remove();
-        mCurrentLocationMarker = mGoogleMap.addMarker(new MarkerOptions().position(coords));*/
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
     }
@@ -440,11 +450,6 @@ public class MainActivity extends AppCompatActivity
             mAddressOutput = resultData.getString(Constants.RESULT_DATA_KEY);
 
             Log.wtf(TAG, "onReceiveResult(), mAddressOutput = " + mAddressOutput);
-
-            // Show a toast message if an address was found.
-            if (resultCode == Constants.SUCCESS_RESULT) {
-                //showToast("Found address: " + mAddressOutput);
-            }
             mAddressRequested = false;
             updateUI();
         }
@@ -474,5 +479,80 @@ public class MainActivity extends AppCompatActivity
 
         mDrawerToggle.setDrawerIndicatorEnabled(true);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
+    }
+
+    private void setUpClusterer() {
+        // Position the map.
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 10));
+
+        // Initialize the manager with the context and the map.
+        // (Activity extends context, so we can pass 'this' in the constructor.)
+        mClusterManager = new ClusterManager<VehicleItem>(this, mGoogleMap);
+        mClusterManager.setRenderer(new VehicleItemRenderer(getApplicationContext(), mGoogleMap, mClusterManager));
+        // Point the map's listeners at the listeners implemented by the cluster
+        // manager.
+        mGoogleMap.setOnCameraIdleListener(mClusterManager);
+        mGoogleMap.setOnMarkerClickListener(mClusterManager);
+    }
+
+    public class VehicleItemRenderer  extends DefaultClusterRenderer<VehicleItem> {
+        private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
+        private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
+        private final ImageView mImageView;
+        private final ImageView mClusterImageView;
+        private final int mDimension;
+
+        public VehicleItemRenderer(Context context, GoogleMap map, ClusterManager<VehicleItem> clusterManager) {
+            super(context, map, clusterManager);
+
+            View multiProfile = getLayoutInflater().inflate(R.layout.vehicle_marker, null);
+            mClusterIconGenerator.setContentView(multiProfile);
+            mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
+
+            mImageView = new ImageView(getApplicationContext());
+            mDimension = (int) getResources().getDimension(R.dimen.custom_vehicle_image);
+            mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
+            int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
+            mImageView.setPadding(padding, padding, padding, padding);
+            mIconGenerator.setContentView(mImageView);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(VehicleItem vehicle, MarkerOptions markerOptions) {
+            // Draw a single person.
+            // Set the info window to show their name.
+           int resId = vehicle.getVehicleType() == VehicleType.Bus ? R.drawable.temporary_bus_splash :
+                                                                    R.drawable.temporary_tram_splash;
+
+            mImageView.setImageResource(resId);
+            Bitmap icon = mIconGenerator.makeIcon();
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(vehicle.getTitle());
+        }
+
+        @Override
+        protected void onBeforeClusterRendered(Cluster<VehicleItem> cluster, MarkerOptions markerOptions) {
+            // Draw multiple people.
+            // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
+            if (cluster.getSize() == 0)
+                return;
+
+            Drawable d;
+            if (cluster.getItems().iterator().next().getVehicleType() == VehicleType.Bus)
+                d = cluster.getSize() == 1 ? getDrawable(R.drawable.temporary_bus_splash) :
+                                             getDrawable(R.drawable.temporary_bus_splash_cluster);
+            else
+                d = cluster.getSize() == 1 ? getDrawable(R.drawable.temporary_tram_splash) :
+                                             getDrawable(R.drawable.temporary_tram_splash_cluster);
+
+            mClusterImageView.setImageDrawable(d);
+            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster cluster) {
+            // Always render clusters.
+            return cluster.getSize() > 1;
+        }
     }
 }
