@@ -64,6 +64,10 @@ import java.util.List;
 import java.util.StringTokenizer;
 import java.util.TreeMap;
 
+import pl.kuc_industries.warsawnavihelper.Constants;
+import pl.kuc_industries.warsawnavihelper.DrawerItems.TramAndBusSecondaryDrawerItem;
+import pl.kuc_industries.warsawnavihelper.FetchAddressIntentService;
+import pl.kuc_industries.warsawnavihelper.R;
 import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleItem;
 import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
@@ -104,16 +108,7 @@ public class MainActivity extends AppCompatActivity
     protected Boolean mAddressRequested;
     protected String mLastUpdateTime;
     private Drawer result = null;
-
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
-    private DrawerLayoutEdgeToggle mCustomDrawerToggle;
-    private String mActivityTitle;
-    private String[] items;
-
-    private ExpandableListView mExpandableListView;
-    private ExpandableListAdapter mExpandableListAdapter;
-    private List<String> mExpandableListCategoriesTitles;
+    private ZTM2ViewProvider mProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -441,28 +436,6 @@ public class MainActivity extends AppCompatActivity
 
     protected void showToast(String text) {
         Toast.makeText(this, text, Toast.LENGTH_LONG).show();
-    }
-
-    private void setupDrawer() {
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle(R.string.menu_categories);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mActivityTitle);
-                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-            }
-        };
-
-        mDrawerToggle.setDrawerIndicatorEnabled(true);
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
     }
 
     private void setUpClusterer() {
