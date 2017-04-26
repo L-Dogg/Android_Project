@@ -90,11 +90,15 @@ public class TramAndBusGridAdapter extends RecyclerView.Adapter<TramAndBusGridAd
 
             tramAndBusLine.setVisible(newVisibility);
             mTramAndBusLineNameTextView.setBackgroundColor(newVisibility ? visibleBgColor : invisibleBgColor);
-
-            if (vehicleType == VehicleType.Bus)
+            if (true == newVisibility) {
+                if (vehicleType == VehicleType.Bus)
                 ztm2ViewProvider.getBuses(Integer.parseInt(tramAndBusLine.getLineName()));
             else
                 ztm2ViewProvider.getTrams(Integer.parseInt(tramAndBusLine.getLineName()));
+            }
+            else {
+                ztm2ViewProvider.removeVehiclesFromMap(tramAndBusLine.getLineName());
+            }
         }
 
     }
