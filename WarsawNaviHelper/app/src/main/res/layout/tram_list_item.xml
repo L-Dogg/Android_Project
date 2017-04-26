@@ -21,4 +21,10 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:entries="@array/tram_lines"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Find"
+        android:onClick="findTramOrBusButtonHandler"/>
 </LinearLayout>

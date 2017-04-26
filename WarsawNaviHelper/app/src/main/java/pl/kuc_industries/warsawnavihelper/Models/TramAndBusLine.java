@@ -1,10 +1,10 @@
-package pl.kuc_industries.warsawnavihelper;
+package pl.kuc_industries.warsawnavihelper.Models;
 
 /**
  * Created by mateusz on 4/25/17.
  */
 
-class TramAndBusLine {
+public class TramAndBusLine {
 
     private String lineName;
     private boolean visible;

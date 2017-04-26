@@ -1,7 +1,6 @@
-package pl.kuc_industries.warsawnavihelper;
+package pl.kuc_industries.warsawnavihelper.DrawerItems;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
+
+import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
+import pl.kuc_industries.warsawnavihelper.R;
 
 /**
  * Created by mateusz on 4/25/17.

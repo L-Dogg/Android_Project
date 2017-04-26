@@ -14,4 +14,6 @@ public final class Constants {
     public static final String LOCATION_DATA_EXTRA = PACKAGE_NAME + ".LOCATION_DATA_EXTRA";
 
     public static final int TRAM_AND_BUS_LINES_PER_ROW = 6;
+    // TODO: use ProGuard or other API keys storing method:
+    public static final String UM_API_KEY = "b2404019-9b1d-4ff5-9969-af137b28c7da";
 }
