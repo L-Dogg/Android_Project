@@ -25,6 +25,7 @@ import android.widget.ExpandableListView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
+import com.afollestad.materialdialogs.StackingBehavior;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
@@ -50,6 +51,7 @@ import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -61,6 +63,8 @@ import java.util.TreeMap;
 
 import pl.kuc_industries.warsawnavihelper.DrawerItems.TramAndBusSecondaryDrawerItem;
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
+
+import static pl.kuc_industries.warsawnavihelper.Constants.TRAM_AND_BUS_LINES_PER_ROW;
 
 public class MainActivity extends AppCompatActivity
         implements OnMapReadyCallback,
@@ -129,26 +133,39 @@ public class MainActivity extends AppCompatActivity
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
                         new ExpandableDrawerItem().withName("Tram and Bus").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
-                                new SecondaryDrawerItem().withName("Label1").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2002),
-                                new SecondaryDrawerItem().withName("Label 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2003),
-                                new SecondaryDrawerItem().withName("TramsAndBuses").withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                new SecondaryDrawerItem().withName("Trams").withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                     @Override
                                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                                         Context context = view.getContext();
                                         new MaterialDialog.Builder(view.getContext()).
-                                                title("Select your lines").
+                                                title("Select your tram lines").
                                                 adapter(new TramAndBusGridAdapter(context),
-                                                        new GridLayoutManager(context, 4)).
-                                                                show();
+                                                        new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
+                                                show();
                                         return true;
                                     }
-                                }),
-                                new TramAndBusSecondaryDrawerItem().withName("Spinner Item").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2004)
+                                }).withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(2002),
+                                new SecondaryDrawerItem().withName("Buses").withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                    @Override
+                                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                        Context context = view.getContext();
+                                        new MaterialDialog.Builder(view.getContext()).
+                                                title("Select your bus lines").
+                                                adapter(new TramAndBusGridAdapter(context),
+                                                        new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
+                                                show();
+                                        return true;
+                                    }
+                                }).withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(2003)
                         ),
+                        new PrimaryDrawerItem().withName("Veturilo").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false),
                         new ExpandableDrawerItem().withName("ATM").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
                                 new SecondaryDrawerItem().withName("CollapsableItem").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2005),
-                                new SecondaryDrawerItem().withName("CollapsableItem 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2006),
-                                new TramAndBusSecondaryDrawerItem().withName("Spinner Item").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2007)
+                                new SecondaryDrawerItem().withName("CollapsableItem 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2006)
+                        ),
+                        new ExpandableDrawerItem().withName("Air Pollution").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
+                                new SecondaryDrawerItem().withName("CollapsableItem").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2005),
+                                new SecondaryDrawerItem().withName("CollapsableItem 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2006)
                         )
                 )
                 .withSavedInstance(savedInstanceState)
