@@ -50,19 +50,13 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.plus.model.people.Person;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 
 import java.text.DateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
 
 import pl.kuc_industries.warsawnavihelper.Constants;
 import pl.kuc_industries.warsawnavihelper.DrawerItems.TramAndBusSecondaryDrawerItem;
@@ -72,7 +66,6 @@ import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleItem;
 import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ViewProvider;
-import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
 
 public class MainActivity extends AppCompatActivity
     implements OnMapReadyCallback,
@@ -189,7 +182,6 @@ public class MainActivity extends AppCompatActivity
                 mAddressOutput = savedInstanceState.getString(LOCATION_ADDRESS_KEY);
                 showToast(mAddressOutput);
             }
-            updateUI();
         }
     }
 
@@ -235,7 +227,6 @@ public class MainActivity extends AppCompatActivity
 
     public void findTramOrBusButtonHandler(View view) {
         Log.wtf(TAG, "findTramOrBusButtonHandler invoking provider");
-        //mProvider.getBuses(208);
         mProvider.getTrams(9);
     }
 
@@ -271,7 +262,6 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                         mRequestingLocationUpdates = false;
                 }
-                updateUI();
             }
         });
 
@@ -301,7 +291,6 @@ public class MainActivity extends AppCompatActivity
         if (mGoogleApiClient.isConnected() && mRequestingLocationUpdates) {
             startLocationUpdates();
         }
-        //updateUI();
     }
 
     @Override
@@ -324,7 +313,6 @@ public class MainActivity extends AppCompatActivity
         if (mCurrentLocation == null) {
             mCurrentLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
             mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
-            //updateUI();
         }
         if (mRequestingLocationUpdates) {
             Log.i(TAG, "in onConnected(), starting location updates");
@@ -365,7 +353,6 @@ public class MainActivity extends AppCompatActivity
         mAddressRequested = true;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         startIntentService();
-        updateUI();
     }
 
     @Override
@@ -402,11 +389,6 @@ public class MainActivity extends AppCompatActivity
         mProvider = new ZTM2MapProvider(mClusterManager);
     }
 
-    private void updateUI() {
-        if(mCurrentLocation == null || mGoogleMap == null)
-            return;
-    }
-
     public void centerMapOnCurrentLocation()
     {
         LatLng coords =
@@ -430,7 +412,6 @@ public class MainActivity extends AppCompatActivity
 
             Log.wtf(TAG, "onReceiveResult(), mAddressOutput = " + mAddressOutput);
             mAddressRequested = false;
-            updateUI();
         }
     }
 
@@ -452,6 +433,7 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.setOnMarkerClickListener(mClusterManager);
     }
 
+    // This class is a custom renderer for Map Markers, to show the picture on item/cluster of items
     public class VehicleItemRenderer  extends DefaultClusterRenderer<VehicleItem> {
         private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
         private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
