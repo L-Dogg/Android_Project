@@ -57,6 +57,7 @@ public class ZTMController implements Callback<TramBus> {
         Log.wtf(TAG, t.getStackTrace().toString());
     }
 
+    //TODO: change linenumbers to string everywhere
     public void getTrams(int lineNumber) {
         Call<TramBus> call = tramBusAPI.getTrams(
                 RESOURCE_ID,

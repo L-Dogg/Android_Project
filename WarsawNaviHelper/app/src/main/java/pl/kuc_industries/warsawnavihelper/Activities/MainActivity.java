@@ -113,18 +113,6 @@ public class MainActivity extends AppCompatActivity
     protected Boolean mAddressRequested;
     protected String mLastUpdateTime;
 
-    private DrawerLayout mDrawerLayout;
-    private ActionBarDrawerToggle mDrawerToggle;
-
-    // TODO: probably deprecated by MaterialDrawer
-    // private DrawerLayoutEdgeToggle mCustomDrawerToggle;
-    private String mActivityTitle;
-    private String[] items;
-
-    private ExpandableListView mExpandableListView;
-    private ExpandableListAdapter mExpandableListAdapter;
-    private List<String> mExpandableListCategoriesTitles;
-
     private List<TramAndBusLine> mTramAndBusLines;
 
     private Drawer result = null;
@@ -161,7 +149,8 @@ public class MainActivity extends AppCompatActivity
                                         Context context = view.getContext();
                                         new MaterialDialog.Builder(view.getContext()).
                                                 title("Select your tram lines").
-                                                adapter(new TramAndBusGridAdapter(context, mTramAndBusLines),
+                                                adapter(new TramAndBusGridAdapter(context, mTramAndBusLines,
+                                                                                    VehicleType.Tram, mProvider),
                                                         new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
                                                 show();
                                         return true;
@@ -173,7 +162,8 @@ public class MainActivity extends AppCompatActivity
                                         Context context = view.getContext();
                                         new MaterialDialog.Builder(view.getContext()).
                                                 title("Select your tram lines").
-                                                adapter(new TramAndBusGridAdapter(context, mTramAndBusLines),
+                                                adapter(new TramAndBusGridAdapter(context, mTramAndBusLines,
+                                                                                    VehicleType.Bus, mProvider),
                                                         new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
                                                 show();
                                         return true;
@@ -223,29 +213,7 @@ public class MainActivity extends AppCompatActivity
         startLocationUpdates();
     }
 
-    private void initItems() {
-        items = getResources().getStringArray(R.array.menu_category);
-    }
 
-    private void addDrawerItems() {
-        mExpandableListAdapter = new CustomExpandableListAdapter(this,
-                mExpandableListCategoriesTitles,
-                new TreeMap<String, List<String>>());
-        mExpandableListView.setAdapter(mExpandableListAdapter);
-        mExpandableListView.setOnChildClickListener(new ExpandableListView.OnChildClickListener() {
-            @Override
-            public boolean onChildClick(ExpandableListView parent, View v,
-                                        int groupPosition, int childPosition, long id) {
-                /*String selectedItem = ((List) (mExpandableListData.get(mExpandableListTitle.get(groupPosition))))
-                        .get(childPosition).toString();*/
-
-
-                mDrawerLayout.closeDrawer(GravityCompat.START);
-                return false;
-            }
-        });
-    }
-    
     private void updateValuesFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
             if (savedInstanceState.keySet().contains(KEY_REQUESTING_LOCATION_UPDATES)) {
