@@ -51,9 +51,14 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.model.DividerDrawerItem;
 import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
+import com.mikepenz.materialdrawer.model.MiniProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondarySwitchDrawerItem;
+import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
+import com.mikepenz.materialdrawer.model.ToggleDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.text.DateFormat;
@@ -78,6 +83,7 @@ import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
+import pl.kuc_industries.warsawnavihelper.adapter.ExpandableSwitchDrawerItem;
 
 import static pl.kuc_industries.warsawnavihelper.Constants.TRAM_AND_BUS_LINES_PER_ROW;
 
@@ -130,7 +136,8 @@ public class MainActivity extends AppCompatActivity
 
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
-                .withHeaderBackground(R.drawable.material_drawer_header)
+                .withCompactStyle(true)
+                .withHeaderBackground(R.drawable.drawer_header)
                 .build();
 
         mTramAndBusLines = getTramAndBusLineList();
@@ -142,12 +149,13 @@ public class MainActivity extends AppCompatActivity
                 .withItemAnimator(new AlphaCrossFadeAnimator())
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
-                        new ExpandableDrawerItem().withName("Tram and Bus").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
-                                new SecondaryDrawerItem().withName("Trams").withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                        new ExpandableSwitchDrawerItem().withName("Tram and Bus").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
+                                new SecondaryDrawerItem().withName("Trams").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(190).withSelectable(false).
+                                        withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                     @Override
                                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                                         Context context = view.getContext();
-                                        new MaterialDialog.Builder(view.getContext()).
+                                        new MaterialDialog.Builder(context).
                                                 title("Select your tram lines").
                                                 adapter(new TramAndBusGridAdapter(context, mTramAndBusLines,
                                                                                     VehicleType.Tram, mProvider),
@@ -156,12 +164,13 @@ public class MainActivity extends AppCompatActivity
                                                 show();
                                         return true;
                                     }
-                                }).withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(2002),
-                                new SecondaryDrawerItem().withName("Buses").withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                }),
+                                new SecondaryDrawerItem().withName("Buses").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(191).withSelectable(true).
+                                        withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                     @Override
                                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                                         Context context = view.getContext();
-                                        new MaterialDialog.Builder(view.getContext()).
+                                        new MaterialDialog.Builder(context).
                                                 title("Select your tram lines").
                                                 adapter(new TramAndBusGridAdapter(context, mTramAndBusLines,
                                                                                     VehicleType.Bus, mProvider),
@@ -170,17 +179,26 @@ public class MainActivity extends AppCompatActivity
                                                 show();
                                         return true;
                                     }
-                                }).withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(2003)
-                        ),
-                        new PrimaryDrawerItem().withName("Veturilo").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false),
-                        new ExpandableDrawerItem().withName("ATM").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
-                                new SecondaryDrawerItem().withName("CollapsableItem").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2005),
-                                new SecondaryDrawerItem().withName("CollapsableItem 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2006)
-                        ),
-                        new ExpandableDrawerItem().withName("Air Pollution").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
-                                new SecondaryDrawerItem().withName("CollapsableItem").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2005),
-                                new SecondaryDrawerItem().withName("CollapsableItem 2").withLevel(2).withIcon(GoogleMaterial.Icon.gmd_8tracks).withIdentifier(2006)
-                        )
+                                })
+                        ).withSetSelected(false),
+                        new ExpandableSwitchDrawerItem().withName("Veturilo").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(20).withSelectable(false).withSubItems(
+                                new SecondarySwitchDrawerItem().withName("Show empty stations").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(200).withSelectable(false)
+                        ).withSetSelected(false),
+                        new ExpandableSwitchDrawerItem().withName("ATM").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(21).withSelectable(false).withSubItems(
+                                new SecondaryDrawerItem().withName("Custom bank").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(210).withSelectable(false).
+                                        withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                            @Override
+                                            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                                Context context = view.getContext();
+                                                new MaterialDialog.Builder(context).
+                                                        title("Select your tram lines").
+                                                        items(R.array.bank_types).
+                                                        show();
+                                                return true;
+                                            }
+                                        }),
+                                new SecondarySwitchDrawerItem().withName("Show free ATMs").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(211).withSelectable(false)
+                        ).withSetSelected(false)
                 )
                 .withSavedInstance(savedInstanceState)
                 .withShowDrawerOnFirstLaunch(true)
