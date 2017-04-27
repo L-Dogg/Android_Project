@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity
                                                 adapter(new TramAndBusGridAdapter(context, mTramAndBusLines,
                                                                                     VehicleType.Tram, mProvider),
                                                         new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
+                                                positiveText("OK").
                                                 show();
                                         return true;
                                     }
@@ -165,6 +166,7 @@ public class MainActivity extends AppCompatActivity
                                                 adapter(new TramAndBusGridAdapter(context, mTramAndBusLines,
                                                                                     VehicleType.Bus, mProvider),
                                                         new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
+                                                positiveText("OK").
                                                 show();
                                         return true;
                                     }
