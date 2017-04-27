@@ -82,7 +82,6 @@ import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleItem;
 import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ViewProvider;
-import pl.kuc_industries.warsawnavihelper.adapter.CustomExpandableListAdapter;
 import pl.kuc_industries.warsawnavihelper.adapter.ExpandableSwitchDrawerItem;
 
 import static pl.kuc_industries.warsawnavihelper.Constants.TRAM_AND_BUS_LINES_PER_ROW;
