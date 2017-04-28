@@ -13,8 +13,7 @@ import java.util.List;
 import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
 import pl.kuc_industries.warsawnavihelper.R;
 import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
-import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ViewProvider;
-import pl.kuc_industries.warsawnavihelper.ZTM.ZTMController;
+import pl.kuc_industries.warsawnavihelper.ZTM.Provider.IZTM2ViewProvider;
 
 /**
  * Created by mateusz on 4/25/17.
@@ -27,9 +26,9 @@ public class TramAndBusGridAdapter extends RecyclerView.Adapter<TramAndBusGridAd
     private List<TramAndBusLine> tramAndBusLineList;
     private Context context;
     private final VehicleType vehicleType;
-    private final ZTM2ViewProvider ztm2ViewProvider;
+    private final IZTM2ViewProvider ztm2ViewProvider;
     public TramAndBusGridAdapter(Context context, List<TramAndBusLine> tramAndBusLineList ,
-                                 VehicleType type, ZTM2ViewProvider provider) {
+                                 VehicleType type, IZTM2ViewProvider provider) {
         this.context = context;
         this.tramAndBusLineList = tramAndBusLineList;
         this.ztm2ViewProvider = provider;

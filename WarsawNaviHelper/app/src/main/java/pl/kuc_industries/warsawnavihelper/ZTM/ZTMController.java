@@ -6,8 +6,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import pl.kuc_industries.warsawnavihelper.Constants;
-import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ControllerProvider;
-import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
+import pl.kuc_industries.warsawnavihelper.ZTM.Provider.IZTM2ControllerProvider;
 import pl.kuc_industries.warsawnavihelper.ZTM.Query.TramBusAPI;
 import pl.kuc_industries.warsawnavihelper.ZTM.QueryResult.TramBus;
 import retrofit2.Call;
@@ -23,9 +22,9 @@ public class ZTMController implements Callback<TramBus> {
     private static final String RESOURCE_ID = "f2e5503e-927d-4ad3-9500-4ab9e55deb59";
 
     private TramBusAPI tramBusAPI;
-    private ZTM2ControllerProvider provider;
+    private IZTM2ControllerProvider provider;
 
-    public ZTMController(ZTM2ControllerProvider provider) {
+    public ZTMController(IZTM2ControllerProvider provider) {
         this.provider = provider;
     }
 

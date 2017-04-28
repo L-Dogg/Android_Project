@@ -11,17 +11,12 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListAdapter;
-import android.widget.ExpandableListView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -51,14 +46,8 @@ import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
-import com.mikepenz.materialdrawer.model.DividerDrawerItem;
-import com.mikepenz.materialdrawer.model.ExpandableDrawerItem;
-import com.mikepenz.materialdrawer.model.MiniProfileDrawerItem;
-import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondarySwitchDrawerItem;
-import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
-import com.mikepenz.materialdrawer.model.ToggleDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.text.DateFormat;
@@ -71,7 +60,7 @@ import com.google.maps.android.ui.IconGenerator;
 
 import java.util.Date;
 import java.util.List;
-import java.util.TreeMap;
+import java.util.Timer;
 
 import pl.kuc_industries.warsawnavihelper.Constants;
 import pl.kuc_industries.warsawnavihelper.FetchAddressIntentService;
@@ -81,7 +70,8 @@ import pl.kuc_industries.warsawnavihelper.DrawerItems.TramAndBusGridAdapter;
 import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleItem;
 import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
-import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ViewProvider;
+import pl.kuc_industries.warsawnavihelper.ZTM.Provider.IZTM2ViewProvider;
+import pl.kuc_industries.warsawnavihelper.ZTM.TramAndBusMapUpdater;
 import pl.kuc_industries.warsawnavihelper.adapter.ExpandableSwitchDrawerItem;
 
 import static pl.kuc_industries.warsawnavihelper.Constants.BUS_LINES_PER_ROW;
@@ -98,6 +88,9 @@ public class MainActivity extends AppCompatActivity
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
     public static final long FASTEST_UPDATE_INTERVAL_IN_MILLISECONDS =
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
+
+    public static final long ZTM_UPDATE_INTERVAL_IN_MILISECONDS = 5000;
+    private Timer mZTMTimer;
 
     // Keys for storing activity state in the Bundle.
     protected final static String KEY_REQUESTING_LOCATION_UPDATES = "requesting-location-updates";
@@ -123,7 +116,7 @@ public class MainActivity extends AppCompatActivity
     private List <TramAndBusLine> mBusLines;
 
     private Drawer result = null;
-    private ZTM2ViewProvider mProvider;
+    private IZTM2ViewProvider mProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -134,6 +127,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mZTMTimer = new Timer("ZTMUpdater", true);
 
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -255,7 +250,6 @@ public class MainActivity extends AppCompatActivity
                 mAddressOutput = savedInstanceState.getString(LOCATION_ADDRESS_KEY);
                 showToast(mAddressOutput);
             }
-            updateUI();
         }
     }
 
@@ -331,7 +325,6 @@ public class MainActivity extends AppCompatActivity
                         Toast.makeText(MainActivity.this, errorMessage, Toast.LENGTH_LONG).show();
                         mRequestingLocationUpdates = false;
                 }
-                updateUI();
             }
         });
 
@@ -425,7 +418,6 @@ public class MainActivity extends AppCompatActivity
         mAddressRequested = true;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         startIntentService();
-        updateUI();
     }
 
     @Override
@@ -460,11 +452,9 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.animateCamera(zoom);
         setUpClusterer();
         mProvider = new ZTM2MapProvider(mClusterManager);
-    }
-
-    private void updateUI() {
-        if(mCurrentLocation == null || mGoogleMap == null)
-            return;
+        mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mProvider),
+                2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
+                ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
     }
 
     public void centerMapOnCurrentLocation()
@@ -490,7 +480,6 @@ public class MainActivity extends AppCompatActivity
 
             Log.wtf(TAG, "onReceiveResult(), mAddressOutput = " + mAddressOutput);
             mAddressRequested = false;
-            updateUI();
         }
     }
 

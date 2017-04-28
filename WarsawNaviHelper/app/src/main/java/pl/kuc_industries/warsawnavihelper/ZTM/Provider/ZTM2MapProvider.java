@@ -1,32 +1,22 @@
 package pl.kuc_industries.warsawnavihelper.ZTM.Provider;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Paint;
 import android.util.Log;
 
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import pl.kuc_industries.warsawnavihelper.R;
 import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleItem;
 import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
 import pl.kuc_industries.warsawnavihelper.ZTM.QueryResult.TramBus;
 import pl.kuc_industries.warsawnavihelper.ZTM.QueryResult.TramBusQueryResult;
 import pl.kuc_industries.warsawnavihelper.ZTM.ZTMController;
-import pl.kuc_industries.warsawnavihelper.adapter.ItemTypes;
 
-public class ZTM2MapProvider implements ZTM2ControllerProvider, ZTM2ViewProvider {
+import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+
+public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvider {
     private final static String TAG = "ZTM2MapProvider";
 
     private ZTMController ztmController;
@@ -68,8 +58,26 @@ public class ZTM2MapProvider implements ZTM2ControllerProvider, ZTM2ViewProvider
         mClusterManager.addItems(mVehiclesVisibleOnMap);
     }
 
+    @Override
+    public void updateVehiclesPositionsOnMap() {
+        mClusterManager.clearItems();
+        List<VehicleItem> tmp = new LinkedList<>(mVehiclesVisibleOnMap);
+        mVehiclesVisibleOnMap.clear();
+
+        for (VehicleItem vehicleItem : tmp) {
+            currentItemType = vehicleItem.getVehicleType();
+            if (currentItemType == VehicleType.Tram)
+                ztmController.getTrams(vehicleItem.getTitle());
+            else
+                ztmController.getBuses(vehicleItem.getTitle());
+        }
+    }
+
+    @Override
     public void showOnMap(TramBus result) {
         Log.wtf(TAG, String.valueOf(result.getResult().size()));
+        // todo: this is a hotfix, refactor later
+        int idx = 0;
         for (TramBusQueryResult vehicle : result.getResult()) {
             VehicleItem vehicleItem= new VehicleItem(vehicle.getLat(),
                     vehicle.getLon(),
@@ -77,7 +85,13 @@ public class ZTM2MapProvider implements ZTM2ControllerProvider, ZTM2ViewProvider
                     "",
                     currentItemType);
             mClusterManager.addItem(vehicleItem);
-            mVehiclesVisibleOnMap.add(vehicleItem);
+            if (idx == 0)
+                mVehiclesVisibleOnMap.add(vehicleItem);
+            idx++;
         }
     }
+
+    @Override
+    public int getLinesVisibleOnMapCount() { return mVehiclesVisibleOnMap.size(); }
+
 }
