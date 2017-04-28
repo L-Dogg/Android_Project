@@ -62,7 +62,6 @@
     </string-array>
 
     <string-array name="bus_lines">
-        <item>102</item>
         <item>154</item>
         <item>186</item>
         <item>187</item>

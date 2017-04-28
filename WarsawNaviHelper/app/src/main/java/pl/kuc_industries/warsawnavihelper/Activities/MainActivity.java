@@ -84,7 +84,8 @@ import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
 import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.adapter.ExpandableSwitchDrawerItem;
 
-import static pl.kuc_industries.warsawnavihelper.Constants.TRAM_AND_BUS_LINES_PER_ROW;
+import static pl.kuc_industries.warsawnavihelper.Constants.BUS_LINES_PER_ROW;
+import static pl.kuc_industries.warsawnavihelper.Constants.TRAM__LINES_PER_ROW;
 
 public class MainActivity extends AppCompatActivity
         implements OnMapReadyCallback,
@@ -160,7 +161,7 @@ public class MainActivity extends AppCompatActivity
                                                 title("Select your tram lines").
                                                 adapter(new TramAndBusGridAdapter(context, mTramLines,
                                                                                     VehicleType.Tram, mProvider),
-                                                        new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
+                                                        new GridLayoutManager(context, TRAM__LINES_PER_ROW)).
                                                 positiveText("OK").
                                                 show();
                                         return true;
@@ -175,7 +176,7 @@ public class MainActivity extends AppCompatActivity
                                                 title("Select your bus lines").
                                                 adapter(new TramAndBusGridAdapter(context, mBusLines,
                                                                                     VehicleType.Bus, mProvider),
-                                                        new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
+                                                        new GridLayoutManager(context, BUS_LINES_PER_ROW)).
                                                 positiveText("OK").
                                                 show();
                                         return true;
