@@ -57,23 +57,22 @@ public class ZTMController implements Callback<TramBus> {
         Log.wtf(TAG, t.getStackTrace().toString());
     }
 
-    //TODO: change linenumbers to string everywhere
-    public void getTrams(int lineNumber) {
+    public void getTrams(String lineNumber) {
         Call<TramBus> call = tramBusAPI.getTrams(
                 RESOURCE_ID,
                 Constants.UM_API_KEY,
                 ZTMVehicleType.Tram.getValue(),
-                String.valueOf(lineNumber),
+                lineNumber,
                 null);
         call.enqueue(this);
     }
 
-    public void getBuses(int lineNumber) {
+    public void getBuses(String lineNumber) {
         Call<TramBus> call = tramBusAPI.getTrams(
                 RESOURCE_ID,
                 Constants.UM_API_KEY,
                 ZTMVehicleType.Bus.getValue(),
-                String.valueOf(lineNumber),
+                lineNumber,
                 null);
         call.enqueue(this);
     }

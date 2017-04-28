@@ -118,7 +118,8 @@ public class MainActivity extends AppCompatActivity
     protected Boolean mAddressRequested;
     protected String mLastUpdateTime;
 
-    private List<TramAndBusLine> mTramAndBusLines;
+    private List<TramAndBusLine> mTramLines;
+    private List <TramAndBusLine> mBusLines;
 
     private Drawer result = null;
     private ZTM2ViewProvider mProvider;
@@ -139,7 +140,8 @@ public class MainActivity extends AppCompatActivity
                 .withHeaderBackground(R.drawable.drawer_header)
                 .build();
 
-        mTramAndBusLines = getTramAndBusLineList();
+        mTramLines = getTramLines();
+        mBusLines = getBusLines();
 
         result = new DrawerBuilder()
                 .withActivity(this)
@@ -156,7 +158,7 @@ public class MainActivity extends AppCompatActivity
                                         Context context = view.getContext();
                                         new MaterialDialog.Builder(context).
                                                 title("Select your tram lines").
-                                                adapter(new TramAndBusGridAdapter(context, mTramAndBusLines,
+                                                adapter(new TramAndBusGridAdapter(context, mTramLines,
                                                                                     VehicleType.Tram, mProvider),
                                                         new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
                                                 positiveText("OK").
@@ -170,8 +172,8 @@ public class MainActivity extends AppCompatActivity
                                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                                         Context context = view.getContext();
                                         new MaterialDialog.Builder(context).
-                                                title("Select your tram lines").
-                                                adapter(new TramAndBusGridAdapter(context, mTramAndBusLines,
+                                                title("Select your bus lines").
+                                                adapter(new TramAndBusGridAdapter(context, mBusLines,
                                                                                     VehicleType.Bus, mProvider),
                                                         new GridLayoutManager(context, TRAM_AND_BUS_LINES_PER_ROW)).
                                                 positiveText("OK").
@@ -294,12 +296,6 @@ public class MainActivity extends AppCompatActivity
                 }
                 break;
         }
-    }
-
-    public void findTramOrBusButtonHandler(View view) {
-        Log.wtf(TAG, "findTramOrBusButtonHandler invoking provider");
-        //mProvider.getBuses(208);
-        mProvider.getTrams(9);
     }
 
     protected void startLocationUpdates() {
@@ -497,9 +493,19 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private List<TramAndBusLine> getTramAndBusLineList() {
+    private List<TramAndBusLine> getTramLines() {
         List<TramAndBusLine> tramAndBusLineList = new ArrayList<>();
         String[] tramAndBusLineNames = getResources().getStringArray(R.array.tram_lines);
+
+        for (String tramAndBusLineName : tramAndBusLineNames) {
+            tramAndBusLineList.add(new TramAndBusLine(tramAndBusLineName));
+        }
+        return tramAndBusLineList;
+    }
+
+    private List<TramAndBusLine> getBusLines() {
+        List<TramAndBusLine> tramAndBusLineList = new ArrayList<>();
+        String[] tramAndBusLineNames = getResources().getStringArray(R.array.bus_lines);
 
         for (String tramAndBusLineName : tramAndBusLineNames) {
             tramAndBusLineList.add(new TramAndBusLine(tramAndBusLineName));

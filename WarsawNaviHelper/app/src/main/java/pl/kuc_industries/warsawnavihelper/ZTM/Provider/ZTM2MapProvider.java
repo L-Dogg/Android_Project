@@ -42,13 +42,13 @@ public class ZTM2MapProvider implements ZTM2ControllerProvider, ZTM2ViewProvider
     }
 
     @Override
-    public void getTrams(int lineNumber) {
+    public void getTrams(String lineNumber) {
         ztmController.getTrams(lineNumber);
         currentItemType = VehicleType.Tram;
     }
 
     @Override
-    public void getBuses(int lineNumber) {
+    public void getBuses(String lineNumber) {
         ztmController.getBuses(lineNumber);
         currentItemType = VehicleType.Bus;
     }
