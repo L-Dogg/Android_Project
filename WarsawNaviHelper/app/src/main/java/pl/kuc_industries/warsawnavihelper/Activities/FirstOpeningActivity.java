@@ -44,8 +44,7 @@ public class FirstOpeningActivity extends AppCompatActivity {
 
         edit.putString(getString(R.string.pref_default_bank), bank.getSelectedItem().toString());
         edit.putString(getString(R.string.pref_default_stop), stop.getSelectedItem().toString());
-        //TODO: uncomment this for release build
-        //edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
+        edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
         edit.commit();
 
         Toast.makeText(getApplicationContext(), "Settings saved", Toast.LENGTH_LONG);
