@@ -546,6 +546,9 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.setOnMarkerClickListener(mZTMClusterManager);
 
         mATMClusterManager = new ClusterManager<>(this, mGoogleMap);
+        mATMClusterManager.setRenderer(new AtmItemRenderer(getApplicationContext(), mGoogleMap, mATMClusterManager));
+        mGoogleMap.setOnCameraIdleListener(mATMClusterManager);
+        mGoogleMap.setOnMarkerClickListener(mATMClusterManager);
     }
 
     public class VehicleItemRenderer  extends DefaultClusterRenderer<VehicleItem> {
@@ -572,8 +575,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onBeforeClusterItemRendered(VehicleItem vehicle, MarkerOptions markerOptions) {
-            // Draw a single person.
-            // Set the info window to show their name.
+            // Draw a single vehicle
            int resId = vehicle.getVehicleType() == VehicleType.Bus ? R.drawable.temporary_bus_splash :
                                                                     R.drawable.temporary_tram_splash;
 
@@ -584,8 +586,7 @@ public class MainActivity extends AppCompatActivity
 
         @Override
         protected void onBeforeClusterRendered(Cluster<VehicleItem> cluster, MarkerOptions markerOptions) {
-            // Draw multiple people.
-            // Note: this method runs on the UI thread. Don't spend too much time in here (like in this example).
+            // Draw multiple vehicles
             if (cluster.getSize() == 0)
                 return;
 
@@ -596,6 +597,58 @@ public class MainActivity extends AppCompatActivity
             else
                 d = cluster.getSize() == 1 ? getDrawable(R.drawable.temporary_tram_splash) :
                                              getDrawable(R.drawable.temporary_tram_splash_cluster);
+
+            mClusterImageView.setImageDrawable(d);
+            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster cluster) {
+            // Always render clusters.
+            return cluster.getSize() > 1;
+        }
+    }
+
+    public class AtmItemRenderer extends DefaultClusterRenderer<AtmItem> {
+        private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
+        private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
+        private final ImageView mImageView;
+        private final ImageView mClusterImageView;
+        private final int mDimension;
+
+        public AtmItemRenderer(Context context, GoogleMap map, ClusterManager<AtmItem> clusterManager) {
+            super(context, map, clusterManager);
+
+            View multiProfile = getLayoutInflater().inflate(R.layout.vehicle_marker, null);
+            mClusterIconGenerator.setContentView(multiProfile);
+            mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
+
+            mImageView = new ImageView(getApplicationContext());
+            mDimension = (int) getResources().getDimension(R.dimen.custom_vehicle_image);
+            mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
+            int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
+            mImageView.setPadding(padding, padding, padding, padding);
+            mIconGenerator.setContentView(mImageView);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(AtmItem atm, MarkerOptions markerOptions) {
+            // Draw a single vehicle
+            int resId = R.mipmap.atm;
+
+            mImageView.setImageResource(resId);
+            Bitmap icon = mIconGenerator.makeIcon();
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon)).title(atm.getTitle());
+        }
+
+        @Override
+        protected void onBeforeClusterRendered(Cluster<AtmItem> cluster, MarkerOptions markerOptions) {
+            // Draw multiple vehicles
+            if (cluster.getSize() == 0)
+                return;
+
+            Drawable d = getDrawable(R.mipmap.atm_cluster);
 
             mClusterImageView.setImageDrawable(d);
             Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
