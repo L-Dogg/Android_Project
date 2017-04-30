@@ -62,6 +62,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 
+import pl.kuc_industries.warsawnavihelper.APIs.ATM.ATMController;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.AirPollutionController;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.AirPollutionProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.IAirPollution2ViewProvider;
@@ -191,11 +192,15 @@ public class MainActivity extends AppCompatActivity
                                         withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                             @Override
                                             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                                                Context context = view.getContext();
+                                                //TODO: uncomment this, it's temporary for places api test
+                                                /*Context context = view.getContext();
                                                 new MaterialDialog.Builder(context).
-                                                        title("Select your tram lines").
+                                                        title("Change bank setting").
                                                         items(R.array.bank_types).
-                                                        show();
+                                                        show();*/
+                                                Log.wtf(TAG, "Starting ATMController");
+                                                ATMController atmController = new ATMController();
+                                                atmController.start();
                                                 return true;
                                             }
                                         }),
