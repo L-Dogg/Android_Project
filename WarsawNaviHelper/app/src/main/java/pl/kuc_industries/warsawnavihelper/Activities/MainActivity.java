@@ -67,11 +67,11 @@ import pl.kuc_industries.warsawnavihelper.FetchAddressIntentService;
 import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
 import pl.kuc_industries.warsawnavihelper.R;
 import pl.kuc_industries.warsawnavihelper.DrawerItems.TramAndBusGridAdapter;
-import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleItem;
-import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
-import pl.kuc_industries.warsawnavihelper.ZTM.Provider.ZTM2MapProvider;
-import pl.kuc_industries.warsawnavihelper.ZTM.Provider.IZTM2ViewProvider;
-import pl.kuc_industries.warsawnavihelper.ZTM.TramAndBusMapUpdater;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.MapUtils.VehicleItem;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.MapUtils.VehicleType;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider.ZTM2MapProvider;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider.IZTM2ViewProvider;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.TramAndBusMapUpdater;
 import pl.kuc_industries.warsawnavihelper.adapter.ExpandableSwitchDrawerItem;
 
 import static pl.kuc_industries.warsawnavihelper.Constants.BUS_LINES_PER_ROW;

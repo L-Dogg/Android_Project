@@ -1,4 +1,4 @@
-package pl.kuc_industries.warsawnavihelper.ZTM.QueryResult;
+package pl.kuc_industries.warsawnavihelper.APIs.ZTM.QueryResult;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

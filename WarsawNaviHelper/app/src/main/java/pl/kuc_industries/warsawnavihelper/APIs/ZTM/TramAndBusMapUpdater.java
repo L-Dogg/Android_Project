@@ -1,8 +1,8 @@
-package pl.kuc_industries.warsawnavihelper.ZTM;
+package pl.kuc_industries.warsawnavihelper.APIs.ZTM;
 
 import java.util.TimerTask;
 
-import pl.kuc_industries.warsawnavihelper.ZTM.Provider.IZTM2ViewProvider;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider.IZTM2ViewProvider;
 
 
 public class TramAndBusMapUpdater extends TimerTask {

@@ -1,4 +1,4 @@
-package pl.kuc_industries.warsawnavihelper.ZTM.Provider;
+package pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider;
 
 public interface IZTM2ViewProvider {
     void getTrams(String lineNumber);

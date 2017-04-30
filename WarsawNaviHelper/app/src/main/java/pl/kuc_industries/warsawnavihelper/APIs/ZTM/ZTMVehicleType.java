@@ -1,4 +1,4 @@
-package pl.kuc_industries.warsawnavihelper.ZTM;
+package pl.kuc_industries.warsawnavihelper.APIs.ZTM;
 
 public enum ZTMVehicleType {
     Bus(1),

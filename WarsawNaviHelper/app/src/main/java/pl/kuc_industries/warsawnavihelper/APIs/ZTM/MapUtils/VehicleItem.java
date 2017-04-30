@@ -1,4 +1,4 @@
-package pl.kuc_industries.warsawnavihelper.ZTM.MapUtils;
+package pl.kuc_industries.warsawnavihelper.APIs.ZTM.MapUtils;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.maps.android.clustering.ClusterItem;

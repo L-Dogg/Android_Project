@@ -1,4 +1,4 @@
-package pl.kuc_industries.warsawnavihelper.ZTM;
+package pl.kuc_industries.warsawnavihelper.APIs.ZTM;
 
 import android.util.Log;
 
@@ -6,9 +6,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import pl.kuc_industries.warsawnavihelper.Constants;
-import pl.kuc_industries.warsawnavihelper.ZTM.Provider.IZTM2ControllerProvider;
-import pl.kuc_industries.warsawnavihelper.ZTM.Query.TramBusAPI;
-import pl.kuc_industries.warsawnavihelper.ZTM.QueryResult.TramBus;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider.IZTM2ControllerProvider;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Query.TramBusAPI;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.QueryResult.TramBus;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;

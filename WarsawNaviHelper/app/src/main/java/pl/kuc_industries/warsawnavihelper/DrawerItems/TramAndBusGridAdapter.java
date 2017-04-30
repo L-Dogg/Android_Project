@@ -12,8 +12,8 @@ import java.util.List;
 
 import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
 import pl.kuc_industries.warsawnavihelper.R;
-import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
-import pl.kuc_industries.warsawnavihelper.ZTM.Provider.IZTM2ViewProvider;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.MapUtils.VehicleType;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider.IZTM2ViewProvider;
 
 /**
  * Created by mateusz on 4/25/17.

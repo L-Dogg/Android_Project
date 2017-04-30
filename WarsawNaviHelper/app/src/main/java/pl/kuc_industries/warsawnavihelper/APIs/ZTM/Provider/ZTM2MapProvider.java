@@ -1,4 +1,4 @@
-package pl.kuc_industries.warsawnavihelper.ZTM.Provider;
+package pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider;
 
 import android.util.Log;
 
@@ -8,13 +8,11 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleItem;
-import pl.kuc_industries.warsawnavihelper.ZTM.MapUtils.VehicleType;
-import pl.kuc_industries.warsawnavihelper.ZTM.QueryResult.TramBus;
-import pl.kuc_industries.warsawnavihelper.ZTM.QueryResult.TramBusQueryResult;
-import pl.kuc_industries.warsawnavihelper.ZTM.ZTMController;
-
-import static android.icu.lang.UCharacter.GraphemeClusterBreak.L;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.MapUtils.VehicleItem;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.MapUtils.VehicleType;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.QueryResult.TramBus;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.QueryResult.TramBusQueryResult;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.ZTMController;
 
 public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvider {
     private final static String TAG = "ZTM2MapProvider";
