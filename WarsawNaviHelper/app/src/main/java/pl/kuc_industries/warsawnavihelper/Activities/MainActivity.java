@@ -62,8 +62,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 
-import pl.kuc_industries.warsawnavihelper.APIs.ATM.ATMController;
-import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.AirPollutionController;
+import pl.kuc_industries.warsawnavihelper.APIs.ATM.MapUtils.AtmItem;
+import pl.kuc_industries.warsawnavihelper.APIs.ATM.Provider.ATM2MapProvider;
+import pl.kuc_industries.warsawnavihelper.APIs.ATM.Provider.IATM2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.AirPollutionProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.IAirPollution2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.Constants;
@@ -105,7 +106,8 @@ public class MainActivity extends AppCompatActivity
 
     protected GoogleApiClient mGoogleApiClient;
     protected GoogleMap mGoogleMap;
-    private ClusterManager<VehicleItem> mClusterManager;
+    private ClusterManager<VehicleItem> mZTMClusterManager;
+    private ClusterManager<AtmItem> mATMClusterManager;
     protected LocationRequest mLocationRequest;
     protected LocationSettingsRequest mLocationSettingsRequest;
     protected Location mCurrentLocation;
@@ -120,6 +122,8 @@ public class MainActivity extends AppCompatActivity
     private List <TramAndBusLine> mBusLines;
 
     private Drawer result = null;
+
+    private IATM2ViewProvider mATMProvider;
     private IZTM2ViewProvider mZTMProvider;
     private IAirPollution2ViewProvider mAirPollutionProvider;
 
@@ -198,9 +202,9 @@ public class MainActivity extends AppCompatActivity
                                                         title("Change bank setting").
                                                         items(R.array.bank_types).
                                                         show();*/
-                                                Log.wtf(TAG, "Starting ATMController");
-                                                ATMController atmController = new ATMController();
-                                                atmController.start();
+                                                //TODO: radius input field
+                                                Log.wtf(TAG, "Starting ATM Provider");
+                                                mATMProvider.getATMs(mCurrentLocation, 1500);
                                                 return true;
                                             }
                                         }),
@@ -474,7 +478,9 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
         setUpClusterer();
-        mZTMProvider = new ZTM2MapProvider(mClusterManager);
+
+        mATMProvider = new ATM2MapProvider(mATMClusterManager);
+        mZTMProvider = new ZTM2MapProvider(mZTMClusterManager);
         mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
                 ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
@@ -534,14 +540,12 @@ public class MainActivity extends AppCompatActivity
         // Position the map.
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(51.503186, -0.126446), 10));
 
-        // Initialize the manager with the context and the map.
-        // (Activity extends context, so we can pass 'this' in the constructor.)
-        mClusterManager = new ClusterManager<VehicleItem>(this, mGoogleMap);
-        mClusterManager.setRenderer(new VehicleItemRenderer(getApplicationContext(), mGoogleMap, mClusterManager));
-        // Point the map's listeners at the listeners implemented by the cluster
-        // manager.
-        mGoogleMap.setOnCameraIdleListener(mClusterManager);
-        mGoogleMap.setOnMarkerClickListener(mClusterManager);
+        mZTMClusterManager = new ClusterManager<>(this, mGoogleMap);
+        mZTMClusterManager.setRenderer(new VehicleItemRenderer(getApplicationContext(), mGoogleMap, mZTMClusterManager));
+        mGoogleMap.setOnCameraIdleListener(mZTMClusterManager);
+        mGoogleMap.setOnMarkerClickListener(mZTMClusterManager);
+
+        mATMClusterManager = new ClusterManager<>(this, mGoogleMap);
     }
 
     public class VehicleItemRenderer  extends DefaultClusterRenderer<VehicleItem> {

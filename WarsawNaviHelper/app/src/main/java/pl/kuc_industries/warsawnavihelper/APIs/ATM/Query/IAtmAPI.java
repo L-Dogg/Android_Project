@@ -12,6 +12,13 @@ public interface IAtmAPI {
             @Path("output") String output,
             @Query("location") String location,
             @Query("radius") int radius,
+            @Query("type") String type,
+            @Query("key") String key);
+
+    Call<ATMQueryResult> getNearbyFilteredATMs(
+            @Path("output") String output,
+            @Query("location") String location,
+            @Query("radius") int radius,
             @Query("keyword") String keyword,
             @Query("type") String type,
             @Query("key") String key);

@@ -1,10 +1,12 @@
 package pl.kuc_industries.warsawnavihelper.APIs.ATM;
 
+import android.location.Location;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import pl.kuc_industries.warsawnavihelper.APIs.ATM.Provider.IATM2ControllerProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.ATM.Query.IAtmAPI;
 import pl.kuc_industries.warsawnavihelper.APIs.ATM.QueryResult.ATMQueryResult;
 import retrofit2.Call;
@@ -20,6 +22,13 @@ public class ATMController implements Callback<ATMQueryResult> {
     private static final String OUTPUT = "json";
     private static final String TYPE = "atm";
 
+    private IAtmAPI mAtmAPI;
+    private IATM2ControllerProvider mAtm2ControllerProvider;
+
+    public ATMController(IATM2ControllerProvider iatm2ControllerProvider) {
+        mAtm2ControllerProvider = iatm2ControllerProvider;
+    }
+
     public void start() {
         Gson gson = new GsonBuilder()
                 .setLenient()
@@ -30,22 +39,15 @@ public class ATMController implements Callback<ATMQueryResult> {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        IAtmAPI atmAPI = retrofit.create(IAtmAPI.class);
-
-        Call<ATMQueryResult> call = atmAPI.getNearbyATMs(OUTPUT,
-                                                        "52.233333,21.016667",
-                                                        1000,
-                                                        "BPH",
-                                                        TYPE,
-                                                        APIKEY);
-        call.enqueue(this);
-
+        mAtmAPI = retrofit.create(IAtmAPI.class);
     }
 
     @Override
     public void onResponse(Call<ATMQueryResult> call, Response<ATMQueryResult> response) {
         if(response.isSuccessful()) {
             Log.wtf(TAG, "Number of ATMs found: " + response.body().getATMs().size());
+            if (response.body().getATMs() != null && response.body().getATMs().size() > 0)
+                mAtm2ControllerProvider.ShowOnMap(response.body().getATMs());
         } else {
             Log.wtf(TAG, response.errorBody().toString());
         }
@@ -55,5 +57,19 @@ public class ATMController implements Callback<ATMQueryResult> {
     public void onFailure(Call<ATMQueryResult> call, Throwable t) {
         t.printStackTrace();
         Log.wtf(TAG, t.getStackTrace().toString());
+    }
+
+    public void getATMs(Location location, int radius) {
+        String strLoc = location.getLatitude() + "," + location.getLongitude();
+        Call<ATMQueryResult> call =
+                mAtmAPI.getNearbyATMs(OUTPUT, strLoc, radius, TYPE, APIKEY);
+        call.enqueue(this);
+    }
+
+    public void getFilteredATMs(Location location, int radius, String filter) {
+        String strLoc = location.getLatitude() + "," + location.getLongitude();
+        Call<ATMQueryResult> call =
+                mAtmAPI.getNearbyFilteredATMs(OUTPUT, strLoc, radius, filter, TYPE, APIKEY);
+        call.enqueue(this);
     }
 }
