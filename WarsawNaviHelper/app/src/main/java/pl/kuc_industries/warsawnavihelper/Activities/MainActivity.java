@@ -63,6 +63,8 @@ import java.util.List;
 import java.util.Timer;
 
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.AirPollutionController;
+import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.AirPollutionProvider;
+import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.IAirPollution2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.Constants;
 import pl.kuc_industries.warsawnavihelper.FetchAddressIntentService;
 import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
@@ -117,13 +119,15 @@ public class MainActivity extends AppCompatActivity
     private List <TramAndBusLine> mBusLines;
 
     private Drawer result = null;
-    private IZTM2ViewProvider mProvider;
+    private IZTM2ViewProvider mZTMProvider;
+    private IAirPollution2ViewProvider mAirPollutionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         mResultReceiver = new AddressResultReceiver(new Handler());
+        mAirPollutionProvider = new AirPollutionProvider();
 
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -156,7 +160,7 @@ public class MainActivity extends AppCompatActivity
                                         new MaterialDialog.Builder(context).
                                                 title("Select your tram lines").
                                                 adapter(new TramAndBusGridAdapter(context, mTramLines,
-                                                                                    VehicleType.Tram, mProvider),
+                                                                                    VehicleType.Tram, mZTMProvider),
                                                         new GridLayoutManager(context, TRAM__LINES_PER_ROW)).
                                                 positiveText("OK").
                                                 show();
@@ -171,7 +175,7 @@ public class MainActivity extends AppCompatActivity
                                         new MaterialDialog.Builder(context).
                                                 title("Select your bus lines").
                                                 adapter(new TramAndBusGridAdapter(context, mBusLines,
-                                                                                    VehicleType.Bus, mProvider),
+                                                                                    VehicleType.Bus, mZTMProvider),
                                                         new GridLayoutManager(context, BUS_LINES_PER_ROW)).
                                                 positiveText("OK").
                                                 show();
@@ -196,20 +200,24 @@ public class MainActivity extends AppCompatActivity
                                             }
                                         }),
                                 new SecondarySwitchDrawerItem().withName("Show free ATMs").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(211).withSelectable(false)
-                                    .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                                        @Override
-                                        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                                            Log.wtf(TAG, "Invoking Air Pollution controller");
-                                            AirPollutionController airPollutionController = new AirPollutionController();
-                                            airPollutionController.start();
-                                            return true;
-                                        }
-                                    })
-                        ).withSetSelected(false)
-                )
+                        ).withSetSelected(false),
+                        new ExpandableSwitchDrawerItem().withName("Air Pollution").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).
+                                withIdentifier(20).withSelectable(false).withSubItems(
+                                new SecondaryDrawerItem().withName("Check Air Quality").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(2137).withSelectable(false).
+                                        withOnDrawerItemClickListener(
+                                                new Drawer.OnDrawerItemClickListener() {
+                                                    @Override
+                                                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                                        Log.wtf(TAG, "Update air pollution data");
+                                                        mAirPollutionProvider.UpdateAirPollutionData();
+                                                        return true;
+                                                    }
+                                                }
+                                        )).withSetSelected(false)
+
+                        )
                 .withSavedInstance(savedInstanceState)
                 .withShowDrawerOnFirstLaunch(true)
-                //.withShowDrawerUntilDraggedOpened(true)
                 .build();
 
         getSupportActionBar().hide();
@@ -461,8 +469,8 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
         setUpClusterer();
-        mProvider = new ZTM2MapProvider(mClusterManager);
-        mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mProvider),
+        mZTMProvider = new ZTM2MapProvider(mClusterManager);
+        mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
                 ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
     }
