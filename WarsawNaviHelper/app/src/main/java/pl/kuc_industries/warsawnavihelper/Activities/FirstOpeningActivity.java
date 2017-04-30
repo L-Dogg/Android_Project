@@ -9,15 +9,22 @@ import android.view.View;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import pl.kuc_industries.warsawnavihelper.Fragments.FirstOpenFragment;
 import pl.kuc_industries.warsawnavihelper.R;
 
 
 public class FirstOpeningActivity extends AppCompatActivity {
+    @BindView(R.id.bank_spinner) Spinner mBankSpinner;
+    @BindView(R.id.stop_spinner) Spinner mStopSpinner;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_first_open);
+
+        ButterKnife.bind(this);
     }
 
 
@@ -39,11 +46,8 @@ public class FirstOpeningActivity extends AppCompatActivity {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         SharedPreferences.Editor edit = prefs.edit();
 
-        Spinner bank = (Spinner) findViewById(R.id.bank_spinner);
-        Spinner stop = (Spinner) findViewById(R.id.stop_spinner);
-
-        edit.putString(getString(R.string.pref_default_bank), bank.getSelectedItem().toString());
-        edit.putString(getString(R.string.pref_default_stop), stop.getSelectedItem().toString());
+        edit.putString(getString(R.string.pref_default_bank), mBankSpinner.getSelectedItem().toString());
+        edit.putString(getString(R.string.pref_default_stop), mStopSpinner.getSelectedItem().toString());
         //TODO: uncomment this for release build
         //edit.putBoolean(getString(R.string.pref_previously_started), Boolean.TRUE);
         edit.commit();

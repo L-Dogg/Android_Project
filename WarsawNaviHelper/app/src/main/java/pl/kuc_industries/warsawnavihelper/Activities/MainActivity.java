@@ -62,6 +62,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import pl.kuc_industries.warsawnavihelper.APIs.ATM.MapUtils.AtmItem;
 import pl.kuc_industries.warsawnavihelper.APIs.ATM.Provider.ATM2MapProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.ATM.Provider.IATM2ViewProvider;
@@ -122,6 +124,7 @@ public class MainActivity extends AppCompatActivity
     private List <TramAndBusLine> mBusLines;
 
     private Drawer result = null;
+    @BindView(R.id.toolbar) Toolbar mToolbar;
 
     private IATM2ViewProvider mATMProvider;
     private IZTM2ViewProvider mZTMProvider;
@@ -135,8 +138,9 @@ public class MainActivity extends AppCompatActivity
         mAirPollutionProvider = new AirPollutionProvider();
 
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+        ButterKnife.bind(this);
+
+        setSupportActionBar(mToolbar);
 
         mZTMTimer = new Timer("ZTMUpdater", true);
 
@@ -151,7 +155,7 @@ public class MainActivity extends AppCompatActivity
 
         result = new DrawerBuilder()
                 .withActivity(this)
-                .withToolbar(toolbar)
+                .withToolbar(mToolbar)
                 .withHasStableIds(true)
                 .withItemAnimator(new AlphaCrossFadeAnimator())
                 .withAccountHeader(headerResult)

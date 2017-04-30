@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
 import pl.kuc_industries.warsawnavihelper.R;
 import pl.kuc_industries.warsawnavihelper.APIs.ZTM.MapUtils.VehicleType;
@@ -62,12 +64,13 @@ public class TramAndBusGridAdapter extends RecyclerView.Adapter<TramAndBusGridAd
         private int invisibleBgColor;
 
         private TramAndBusLine tramAndBusLine;
-        private TextView mTramAndBusLineNameTextView;
+        @BindView(R.id.tram_and_bus_grid_item) TextView mTramAndBusLineNameTextView;
 
         public TramAndBusViewHolder(View itemView) {
             super(itemView);
             itemView.setOnClickListener(this);
-            mTramAndBusLineNameTextView = (TextView) itemView.findViewById(R.id.tram_and_bus_grid_item);
+
+            ButterKnife.bind(this, itemView);
 
             visibleBgColor = ContextCompat.getColor(context, R.color.tram_bus_line_visible_bg_color);
             invisibleBgColor = ContextCompat.getColor(context, R.color.tram_bus_line_invisible_bg_color);
