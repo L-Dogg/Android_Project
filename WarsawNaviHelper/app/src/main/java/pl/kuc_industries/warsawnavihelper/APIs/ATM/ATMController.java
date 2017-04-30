@@ -9,6 +9,7 @@ import com.google.gson.GsonBuilder;
 import pl.kuc_industries.warsawnavihelper.APIs.ATM.Provider.IATM2ControllerProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.ATM.Query.IAtmAPI;
 import pl.kuc_industries.warsawnavihelper.APIs.ATM.QueryResult.ATMQueryResult;
+import pl.kuc_industries.warsawnavihelper.Constants;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -17,7 +18,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ATMController implements Callback<ATMQueryResult> {
     private static final String TAG = "ATMController";
-    private static final String APIKEY = "AIzaSyAPoTqS0Kf17U-AvqA3lNMl18GjxqLEL5w";
+
     private static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/";
     private static final String OUTPUT = "json";
     private static final String TYPE = "atm";
@@ -62,14 +63,14 @@ public class ATMController implements Callback<ATMQueryResult> {
     public void getATMs(Location location, int radius) {
         String strLoc = location.getLatitude() + "," + location.getLongitude();
         Call<ATMQueryResult> call =
-                mAtmAPI.getNearbyATMs(OUTPUT, strLoc, radius, TYPE, APIKEY);
+                mAtmAPI.getNearbyATMs(OUTPUT, strLoc, radius, TYPE, Constants.PLACES_API_KEY);
         call.enqueue(this);
     }
 
     public void getFilteredATMs(Location location, int radius, String filter) {
         String strLoc = location.getLatitude() + "," + location.getLongitude();
         Call<ATMQueryResult> call =
-                mAtmAPI.getNearbyFilteredATMs(OUTPUT, strLoc, radius, filter, TYPE, APIKEY);
+                mAtmAPI.getNearbyFilteredATMs(OUTPUT, strLoc, radius, filter, TYPE, Constants.PLACES_API_KEY);
         call.enqueue(this);
     }
 }

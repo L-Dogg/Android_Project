@@ -17,4 +17,5 @@ public final class Constants {
     public static final int BUS_LINES_PER_ROW = 5;
     // TODO: use ProGuard or other API keys storing method:
     public static final String UM_API_KEY = "b2404019-9b1d-4ff5-9969-af137b28c7da";
+    public static final String PLACES_API_KEY = "AIzaSyAPoTqS0Kf17U-AvqA3lNMl18GjxqLEL5w";
 }

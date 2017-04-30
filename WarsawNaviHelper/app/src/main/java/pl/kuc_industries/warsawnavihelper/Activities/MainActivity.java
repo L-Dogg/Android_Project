@@ -57,6 +57,7 @@ import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
+import com.squareup.leakcanary.LeakCanary;
 
 import java.util.Date;
 import java.util.List;
@@ -133,6 +134,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LeakCanary.install(getApplication());
 
         mResultReceiver = new AddressResultReceiver(new Handler());
         mAirPollutionProvider = new AirPollutionProvider();

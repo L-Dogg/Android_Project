@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.squareup.leakcanary.LeakCanary;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import pl.kuc_industries.warsawnavihelper.Fragments.FirstOpenFragment;
@@ -22,8 +24,9 @@ public class FirstOpeningActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_first_open);
+        LeakCanary.install(getApplication());
 
+        setContentView(R.layout.activity_first_open);
         ButterKnife.bind(this);
     }
 
