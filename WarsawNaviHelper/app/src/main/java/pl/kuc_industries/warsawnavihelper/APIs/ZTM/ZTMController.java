@@ -7,7 +7,7 @@ import com.google.gson.GsonBuilder;
 
 import pl.kuc_industries.warsawnavihelper.Constants;
 import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider.IZTM2ControllerProvider;
-import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Query.TramBusAPI;
+import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Query.ITramBusAPI;
 import pl.kuc_industries.warsawnavihelper.APIs.ZTM.QueryResult.TramBus;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -21,7 +21,7 @@ public class ZTMController implements Callback<TramBus> {
     private static final String BASE_URL = "https://api.um.warszawa.pl/api/action/";
     private static final String RESOURCE_ID = "f2e5503e-927d-4ad3-9500-4ab9e55deb59";
 
-    private TramBusAPI tramBusAPI;
+    private ITramBusAPI tramBusAPI;
     private IZTM2ControllerProvider provider;
 
     public ZTMController(IZTM2ControllerProvider provider) {
@@ -38,7 +38,7 @@ public class ZTMController implements Callback<TramBus> {
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
-        tramBusAPI = retrofit.create(TramBusAPI.class);
+        tramBusAPI = retrofit.create(ITramBusAPI.class);
     }
 
     @Override

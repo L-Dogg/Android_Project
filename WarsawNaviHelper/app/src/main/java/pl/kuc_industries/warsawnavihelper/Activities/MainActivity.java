@@ -62,6 +62,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 
+import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.AirPollutionController;
 import pl.kuc_industries.warsawnavihelper.Constants;
 import pl.kuc_industries.warsawnavihelper.FetchAddressIntentService;
 import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
@@ -195,6 +196,15 @@ public class MainActivity extends AppCompatActivity
                                             }
                                         }),
                                 new SecondarySwitchDrawerItem().withName("Show free ATMs").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(211).withSelectable(false)
+                                    .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                        @Override
+                                        public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                            Log.wtf(TAG, "Invoking Air Pollution controller");
+                                            AirPollutionController airPollutionController = new AirPollutionController();
+                                            airPollutionController.start();
+                                            return true;
+                                        }
+                                    })
                         ).withSetSelected(false)
                 )
                 .withSavedInstance(savedInstanceState)
