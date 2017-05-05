@@ -1,4 +1,4 @@
-package pl.kuc_industries.warsawnavihelper.adapter;
+package pl.kuc_industries.warsawnavihelper.DrawerItems;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.model.AbstractSwitchableDrawerItem;

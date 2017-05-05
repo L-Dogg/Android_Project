@@ -52,6 +52,7 @@ import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.text.DateFormat;
 import java.util.ArrayList;
+
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.maps.android.clustering.Cluster;
 import com.google.maps.android.clustering.ClusterManager;
@@ -70,6 +71,7 @@ import pl.kuc_industries.warsawnavihelper.APIs.ATM.Provider.ATM2MapProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.ATM.Provider.IATM2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.AirPollutionProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.IAirPollution2ViewProvider;
+import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.MapUtils.VeturiloItem;
 import pl.kuc_industries.warsawnavihelper.Constants;
 import pl.kuc_industries.warsawnavihelper.FetchAddressIntentService;
 import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
@@ -80,7 +82,7 @@ import pl.kuc_industries.warsawnavihelper.APIs.ZTM.MapUtils.VehicleType;
 import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider.ZTM2MapProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.ZTM.Provider.IZTM2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.ZTM.TramAndBusMapUpdater;
-import pl.kuc_industries.warsawnavihelper.adapter.ExpandableSwitchDrawerItem;
+import pl.kuc_industries.warsawnavihelper.DrawerItems.ExpandableSwitchDrawerItem;
 
 import static pl.kuc_industries.warsawnavihelper.Constants.BUS_LINES_PER_ROW;
 import static pl.kuc_industries.warsawnavihelper.Constants.TRAM__LINES_PER_ROW;
@@ -122,10 +124,11 @@ public class MainActivity extends AppCompatActivity
     protected String mLastUpdateTime;
 
     private List<TramAndBusLine> mTramLines;
-    private List <TramAndBusLine> mBusLines;
+    private List<TramAndBusLine> mBusLines;
 
     private Drawer result = null;
-    @BindView(R.id.toolbar) Toolbar mToolbar;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
 
     private IATM2ViewProvider mATMProvider;
     private IZTM2ViewProvider mZTMProvider;
@@ -155,6 +158,7 @@ public class MainActivity extends AppCompatActivity
         mTramLines = getTramLines();
         mBusLines = getBusLines();
 
+        //region Material Drawer build
         result = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(mToolbar)
@@ -165,34 +169,34 @@ public class MainActivity extends AppCompatActivity
                         new ExpandableSwitchDrawerItem().withName("Tram and Bus").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
                                 new SecondaryDrawerItem().withName("Trams").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(190).withSelectable(false).
                                         withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                                    @Override
-                                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                                        Context context = view.getContext();
-                                        new MaterialDialog.Builder(context).
-                                                title("Select your tram lines").
-                                                adapter(new TramAndBusGridAdapter(context, mTramLines,
-                                                                                    VehicleType.Tram, mZTMProvider),
-                                                        new GridLayoutManager(context, TRAM__LINES_PER_ROW)).
-                                                positiveText("OK").
-                                                show();
-                                        return true;
-                                    }
-                                }),
+                                            @Override
+                                            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                                Context context = view.getContext();
+                                                new MaterialDialog.Builder(context).
+                                                        title("Select your tram lines").
+                                                        adapter(new TramAndBusGridAdapter(context, mTramLines,
+                                                                        VehicleType.Tram, mZTMProvider),
+                                                                new GridLayoutManager(context, TRAM__LINES_PER_ROW)).
+                                                        positiveText("OK").
+                                                        show();
+                                                return true;
+                                            }
+                                        }),
                                 new SecondaryDrawerItem().withName("Buses").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(191).withSelectable(true).
                                         withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
-                                    @Override
-                                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                                        Context context = view.getContext();
-                                        new MaterialDialog.Builder(context).
-                                                title("Select your bus lines").
-                                                adapter(new TramAndBusGridAdapter(context, mBusLines,
-                                                                                    VehicleType.Bus, mZTMProvider),
-                                                        new GridLayoutManager(context, BUS_LINES_PER_ROW)).
-                                                positiveText("OK").
-                                                show();
-                                        return true;
-                                    }
-                                })
+                                            @Override
+                                            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                                Context context = view.getContext();
+                                                new MaterialDialog.Builder(context).
+                                                        title("Select your bus lines").
+                                                        adapter(new TramAndBusGridAdapter(context, mBusLines,
+                                                                        VehicleType.Bus, mZTMProvider),
+                                                                new GridLayoutManager(context, BUS_LINES_PER_ROW)).
+                                                        positiveText("OK").
+                                                        show();
+                                                return true;
+                                            }
+                                        })
                         ).withSetSelected(false),
                         new ExpandableSwitchDrawerItem().withName("Veturilo").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(20).withSelectable(false).withSubItems(
                                 new SecondarySwitchDrawerItem().withName("Show empty stations").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(200).withSelectable(false)
@@ -230,10 +234,11 @@ public class MainActivity extends AppCompatActivity
                                                 }
                                         )).withSetSelected(false)
 
-                        )
+                )
                 .withSavedInstance(savedInstanceState)
                 .withShowDrawerOnFirstLaunch(true)
                 .build();
+        //endregion
 
         getSupportActionBar().hide();
 
@@ -262,7 +267,6 @@ public class MainActivity extends AppCompatActivity
 
         startLocationUpdates();
     }
-
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
@@ -492,8 +496,7 @@ public class MainActivity extends AppCompatActivity
                 ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
     }
 
-    public void centerMapOnCurrentLocation()
-    {
+    public void centerMapOnCurrentLocation() {
         LatLng coords =
                 new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
 
@@ -501,7 +504,6 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
     }
-
 
 
     class AddressResultReceiver extends ResultReceiver {
@@ -557,7 +559,7 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.setOnMarkerClickListener(mATMClusterManager);
     }
 
-    public class VehicleItemRenderer  extends DefaultClusterRenderer<VehicleItem> {
+    public class VehicleItemRenderer extends DefaultClusterRenderer<VehicleItem> {
         private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
         private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
         private final ImageView mImageView;
@@ -582,8 +584,8 @@ public class MainActivity extends AppCompatActivity
         @Override
         protected void onBeforeClusterItemRendered(VehicleItem vehicle, MarkerOptions markerOptions) {
             // Draw a single vehicle
-           int resId = vehicle.getVehicleType() == VehicleType.Bus ? R.drawable.temporary_bus_splash :
-                                                                    R.drawable.temporary_tram_splash;
+            int resId = vehicle.getVehicleType() == VehicleType.Bus ? R.drawable.temporary_bus_splash :
+                    R.drawable.temporary_tram_splash;
 
             mImageView.setImageResource(resId);
             Bitmap icon = mIconGenerator.makeIcon();
@@ -599,10 +601,10 @@ public class MainActivity extends AppCompatActivity
             Drawable d;
             if (cluster.getItems().iterator().next().getVehicleType() == VehicleType.Bus)
                 d = cluster.getSize() == 1 ? getDrawable(R.drawable.temporary_bus_splash) :
-                                             getDrawable(R.drawable.temporary_bus_splash_cluster);
+                        getDrawable(R.drawable.temporary_bus_splash_cluster);
             else
                 d = cluster.getSize() == 1 ? getDrawable(R.drawable.temporary_tram_splash) :
-                                             getDrawable(R.drawable.temporary_tram_splash_cluster);
+                        getDrawable(R.drawable.temporary_tram_splash_cluster);
 
             mClusterImageView.setImageDrawable(d);
             Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
@@ -665,6 +667,13 @@ public class MainActivity extends AppCompatActivity
         protected boolean shouldRenderAsCluster(Cluster cluster) {
             // Always render clusters.
             return cluster.getSize() > 1;
+        }
+    }
+
+    public class VeturiloItemRenderer extends DefaultClusterRenderer<VeturiloItem> {
+
+        public VeturiloItemRenderer(Context context, GoogleMap map, ClusterManager<VeturiloItem> clusterManager) {
+            super(context, map, clusterManager);
         }
     }
 }
