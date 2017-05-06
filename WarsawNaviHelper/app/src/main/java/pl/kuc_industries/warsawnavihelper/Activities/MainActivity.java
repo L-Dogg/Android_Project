@@ -196,6 +196,18 @@ public class MainActivity extends AppCompatActivity
                                                         show();
                                                 return true;
                                             }
+                                        }),
+                                new SecondaryDrawerItem().withName("Stops").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(192).withSelectable(true).
+                                        withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                            @Override
+                                            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                                Context context = view.getContext();
+                                                new MaterialDialog.Builder(context).
+                                                        title("Change default stop").
+                                                        items(R.array.tram_and_bus_stops).
+                                                        show();
+                                                return true;
+                                            }
                                         })
                         ).withSetSelected(false),
                         new ExpandableSwitchDrawerItem().withName("Veturilo").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(20).withSelectable(false).withSubItems(
