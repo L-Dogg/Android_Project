@@ -1,0 +1,28 @@
+{
+  "stops": [{
+    "name": "Centrum",
+    "lat": 52.2304419,
+    "lng": 21.010682
+  },
+    {
+      "name": "Nowowiejska",
+      "lat": 52.220211,
+      "lng": 21.005583
+    },
+    {
+      "name": "Plac Politechniki",
+      "lat": 52.220071,
+      "lng": 21.010984
+    },
+    {
+      "name": "Wawelska",
+      "lat": 52.2448788,
+      "lng": 21.0053511
+    },
+    {
+      "name": "Metro Marymont",
+      "lat": 52.23308100000001,
+      "lng": 20.998286
+    }
+  ]
+}

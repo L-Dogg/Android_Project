@@ -50,6 +50,7 @@ import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondarySwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.util.ArrayList;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -58,6 +59,8 @@ import com.google.maps.android.clustering.ClusterManager;
 import com.google.maps.android.clustering.view.DefaultClusterRenderer;
 import com.google.maps.android.ui.IconGenerator;
 import com.squareup.leakcanary.LeakCanary;
+
+import org.json.JSONException;
 
 import java.util.Date;
 import java.util.List;
@@ -135,6 +138,14 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         LeakCanary.install(getApplication());
+
+        try {
+            Constants.initializeStopToLocationMap(getApplicationContext());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
         mResultReceiver = new AddressResultReceiver(new Handler());
         mAirPollutionProvider = new AirPollutionProvider();
