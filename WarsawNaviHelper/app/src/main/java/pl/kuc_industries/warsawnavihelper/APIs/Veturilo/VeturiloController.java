@@ -45,7 +45,7 @@ public class VeturiloController implements Callback<VeturiloQueryResult> {
 
     @Override
     public void onResponse(Call<VeturiloQueryResult> call, Response<VeturiloQueryResult> response) {
-        if(response.isSuccessful()) {
+        if (response.isSuccessful()) {
             mToControllerProvider.showOnMap(response.body());
         } else {
             Log.wtf(TAG, response.errorBody().toString());

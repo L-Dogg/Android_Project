@@ -6,7 +6,6 @@ package pl.kuc_industries.warsawnavihelper.APIs.Veturilo.Provider;
 
 public interface IVeturilo2ViewProvider {
     void getStations();
-    void updateStationInfosOnView();
     void removeStationsfromView();
 
 }

@@ -13,6 +13,7 @@ public class VeturiloItem implements ClusterItem {
     private String mTitle;
     private String mSnippet;
 
+
     public VeturiloItem(double lat, double lng) {
         mPosition = new LatLng(lat, lng);
     }
