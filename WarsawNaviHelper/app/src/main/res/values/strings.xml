@@ -97,7 +97,7 @@
         <item>ING</item>
     </string-array>
 
-    <string-array name="stops">
+    <string-array name="tram_and_bus_stops">
         <item>Centrum</item>
         <item>Nowowiejska</item>
         <item>Plac Politechniki</item>
