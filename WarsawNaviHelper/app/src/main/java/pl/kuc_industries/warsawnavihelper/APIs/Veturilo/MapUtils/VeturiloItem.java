@@ -9,33 +9,42 @@ import com.google.maps.android.clustering.ClusterItem;
 
 public class VeturiloItem implements ClusterItem {
 
+    private String mStationName;
     private LatLng mPosition;
-    private String mTitle;
-    private String mSnippet;
-
+    private int mFreeBikesNumber;
+    private int mSlotsNumber;
 
     public VeturiloItem(double lat, double lng) {
         mPosition = new LatLng(lat, lng);
     }
 
-    public VeturiloItem(double lat, double lng, String mTitle, String mSnippet) {
-        mPosition = new LatLng(lat, lng);
-        this.mTitle = mTitle;
-        this.mSnippet = mSnippet;
+    public VeturiloItem(String stationName, double lat, double lng, int freeBikesNumber, int slotsNumber) {
+        this.mStationName = stationName;
+        this.mPosition = new LatLng(lat, lng);
+        this.mFreeBikesNumber = freeBikesNumber;
+        this.mSlotsNumber = slotsNumber;
     }
 
     @Override
     public LatLng getPosition() {
-        return null;
+        return mPosition;
     }
 
     @Override
     public String getTitle() {
-        return null;
+        return mStationName;
     }
 
     @Override
     public String getSnippet() {
-        return null;
+        return "Bikes: " + mFreeBikesNumber + "/" + mSlotsNumber;
+    }
+
+    public String getStationName() {
+        return mStationName;
+    }
+
+    public int getFreeBikes() {
+        return mFreeBikesNumber;
     }
 }

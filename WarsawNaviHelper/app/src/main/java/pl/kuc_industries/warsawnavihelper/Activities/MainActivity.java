@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -40,12 +41,14 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.clustering.ClusterItem;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
 import com.mikepenz.materialdrawer.AccountHeader;
 import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondarySwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
@@ -72,6 +75,7 @@ import pl.kuc_industries.warsawnavihelper.APIs.ATM.Provider.IATM2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.AirPollutionProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.IAirPollution2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.MapUtils.VeturiloItem;
+import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.Provider.Veturilo2MapProvider;
 import pl.kuc_industries.warsawnavihelper.Constants;
 import pl.kuc_industries.warsawnavihelper.FetchAddressIntentService;
 import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
@@ -113,6 +117,7 @@ public class MainActivity extends AppCompatActivity
     protected GoogleMap mGoogleMap;
     private ClusterManager<VehicleItem> mZTMClusterManager;
     private ClusterManager<AtmItem> mATMClusterManager;
+    private ClusterManager<VeturiloItem> mVeturiloClusterManager;
     protected LocationRequest mLocationRequest;
     protected LocationSettingsRequest mLocationSettingsRequest;
     protected Location mCurrentLocation;
@@ -132,6 +137,7 @@ public class MainActivity extends AppCompatActivity
 
     private IATM2ViewProvider mATMProvider;
     private IZTM2ViewProvider mZTMProvider;
+    private Veturilo2MapProvider mVeturiloProvider;
     private IAirPollution2ViewProvider mAirPollutionProvider;
 
     @Override
@@ -212,7 +218,14 @@ public class MainActivity extends AppCompatActivity
                         ).withSetSelected(false),
                         new ExpandableSwitchDrawerItem().withName("Veturilo").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(20).withSelectable(false).withSubItems(
                                 new SecondarySwitchDrawerItem().withName("Show empty stations").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(200).withSelectable(false)
-                        ).withSetSelected(false),
+                        ).withSetSelected(false).withOnCheckedChangeListener(new OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
+                                if(isChecked) {
+                                    mVeturiloProvider.getStations();
+                                }
+                            }
+                        }),
                         new ExpandableSwitchDrawerItem().withName("ATM").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(21).withSelectable(false).withSubItems(
                                 new SecondaryDrawerItem().withName("Custom bank").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(210).withSelectable(false).
                                         withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
@@ -503,6 +516,7 @@ public class MainActivity extends AppCompatActivity
 
         mATMProvider = new ATM2MapProvider(mATMClusterManager);
         mZTMProvider = new ZTM2MapProvider(mZTMClusterManager);
+        mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager);
         mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
                 ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
@@ -516,7 +530,6 @@ public class MainActivity extends AppCompatActivity
         mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(coords));
         mGoogleMap.animateCamera(zoom);
     }
-
 
     class AddressResultReceiver extends ResultReceiver {
         public AddressResultReceiver(Handler handler) {
@@ -569,6 +582,11 @@ public class MainActivity extends AppCompatActivity
         mATMClusterManager.setRenderer(new AtmItemRenderer(getApplicationContext(), mGoogleMap, mATMClusterManager));
         mGoogleMap.setOnCameraIdleListener(mATMClusterManager);
         mGoogleMap.setOnMarkerClickListener(mATMClusterManager);
+
+        mVeturiloClusterManager = new ClusterManager<>(this, mGoogleMap);
+        mVeturiloClusterManager.setRenderer(new VeturiloItemRenderer(getApplicationContext(), mGoogleMap, mVeturiloClusterManager));
+        mGoogleMap.setOnCameraIdleListener(mVeturiloClusterManager);
+        mGoogleMap.setOnMarkerClickListener(mVeturiloClusterManager);
     }
 
     public class VehicleItemRenderer extends DefaultClusterRenderer<VehicleItem> {
@@ -684,8 +702,52 @@ public class MainActivity extends AppCompatActivity
 
     public class VeturiloItemRenderer extends DefaultClusterRenderer<VeturiloItem> {
 
+        private final IconGenerator mIconGenerator = new IconGenerator(getApplicationContext());
+        private final IconGenerator mClusterIconGenerator = new IconGenerator(getApplicationContext());
+        private final ImageView mImageView;
+        private final ImageView mClusterImageView;
+        private int mDimension;
+
         public VeturiloItemRenderer(Context context, GoogleMap map, ClusterManager<VeturiloItem> clusterManager) {
             super(context, map, clusterManager);
+
+            View multiProfile = getLayoutInflater().inflate(R.layout.vehicle_marker, null);
+            mClusterIconGenerator.setContentView(multiProfile);
+            mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
+
+            mImageView = new ImageView(getApplicationContext());
+            mDimension = (int) getResources().getDimension(R.dimen.custom_vehicle_image);
+            mImageView.setLayoutParams(new ViewGroup.LayoutParams(mDimension, mDimension));
+            int padding = (int) getResources().getDimension(R.dimen.custom_profile_padding);
+            mImageView.setPadding(padding, padding, padding, padding);
+            mIconGenerator.setContentView(mImageView);
+        }
+
+        @Override
+        protected void onBeforeClusterItemRendered(VeturiloItem item, MarkerOptions markerOptions) {
+            mImageView.setImageResource(R.mipmap.veturilo);
+            Bitmap icon = mIconGenerator.makeIcon();
+            markerOptions.icon(BitmapDescriptorFactory.
+                    fromBitmap(icon)).
+                    title(item.getTitle());
+        }
+
+        @Override
+        protected void onBeforeClusterRendered(Cluster<VeturiloItem> cluster, MarkerOptions markerOptions) {
+            if (cluster.getSize() == 0) {
+                return;
+            }
+
+            Drawable clusterImage = getDrawable(R.mipmap.veturilo);
+
+            mClusterImageView.setImageDrawable(clusterImage);
+            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+            markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
+        }
+
+        @Override
+        protected boolean shouldRenderAsCluster(Cluster<VeturiloItem> cluster) {
+            return cluster.getSize() > 7;
         }
     }
 }

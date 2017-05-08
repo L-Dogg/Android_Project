@@ -6,6 +6,8 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import java.io.IOException;
+
 import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.Provider.IVeturilo2ControllerProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.Provider.IVeturilo2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.Query.IVeturiloAPI;
@@ -23,7 +25,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class VeturiloController implements Callback<VeturiloQueryResult> {
     public static final String TAG = "VeturiloController";
 
-    private static final String BASE_URL = "https://api.citybik.es/v2/networks";
+    private static final String BASE_URL = "https://api.citybik.es/v2/";
     private static final String[] NETWORK_IDS = {"veturilo", "stacje-sponsorskie-veturilo"};
     private IVeturiloAPI mVeturiloAPI;
     private IVeturilo2ControllerProvider mToControllerProvider;
@@ -37,6 +39,7 @@ public class VeturiloController implements Callback<VeturiloQueryResult> {
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
 
         mVeturiloAPI = retrofit.create(IVeturiloAPI.class);
@@ -48,7 +51,12 @@ public class VeturiloController implements Callback<VeturiloQueryResult> {
         if (response.isSuccessful()) {
             mToControllerProvider.showOnMap(response.body());
         } else {
-            Log.wtf(TAG, response.errorBody().toString());
+            try {
+                Log.wtf(TAG, "Response unsuccessful");
+                Log.wtf(TAG, response.errorBody().string());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

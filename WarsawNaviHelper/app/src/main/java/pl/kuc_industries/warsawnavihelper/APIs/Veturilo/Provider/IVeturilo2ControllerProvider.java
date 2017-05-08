@@ -1,8 +1,5 @@
 package pl.kuc_industries.warsawnavihelper.APIs.Veturilo.Provider;
 
-import java.util.List;
-
-import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.QueryResult.Station;
 import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.QueryResult.VeturiloQueryResult;
 
 /**

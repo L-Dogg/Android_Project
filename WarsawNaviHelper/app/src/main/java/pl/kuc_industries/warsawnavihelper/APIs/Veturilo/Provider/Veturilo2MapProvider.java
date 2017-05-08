@@ -1,5 +1,7 @@
 package pl.kuc_industries.warsawnavihelper.APIs.Veturilo.Provider;
 
+import android.util.Log;
+
 import com.google.maps.android.clustering.ClusterManager;
 
 import java.util.List;
@@ -21,6 +23,12 @@ public class Veturilo2MapProvider implements IVeturilo2ViewProvider, IVeturilo2C
     private VeturiloController mVeturiloController;
     private ClusterManager<VeturiloItem> mClusterManager;
 
+    public Veturilo2MapProvider(ClusterManager<VeturiloItem> clusterManager) {
+        this.mClusterManager = clusterManager;
+        mVeturiloController = new VeturiloController(this);
+        mVeturiloController.start();
+    }
+
     @Override
     public void getStations() {
         mVeturiloController.getVeturiloStations();
@@ -36,8 +44,11 @@ public class Veturilo2MapProvider implements IVeturilo2ViewProvider, IVeturilo2C
         Network currentNetwork = veturiloStations.getNetwork();
         if (currentNetwork != null) {
             for (Station station : currentNetwork.getStations()) {
-                VeturiloItem item = new VeturiloItem(station.getLatitude(),
-                        station.getLongitude(), station.getName(), station.getTimestamp());
+                VeturiloItem item = new VeturiloItem(station.getName(),
+                        station.getLatitude(),
+                        station.getLongitude(),
+                        station.getFreeBikes(),
+                        station.getFreeBikes() + station.getEmptySlots());
                 mClusterManager.addItem(item);
             }
         }
