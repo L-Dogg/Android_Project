@@ -92,4 +92,14 @@ public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvid
     @Override
     public int getLinesVisibleOnMapCount() { return mVehiclesVisibleOnMap.size(); }
 
+    @Override
+    public void showAll() {
+        updateVehiclesPositionsOnMap();
+    }
+
+    @Override
+    public void hideAll() {
+        mClusterManager.clearItems();
+    }
+
 }

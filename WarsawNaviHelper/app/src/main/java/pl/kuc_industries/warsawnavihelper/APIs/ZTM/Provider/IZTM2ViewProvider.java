@@ -6,4 +6,7 @@ public interface IZTM2ViewProvider {
     void removeVehiclesFromMap(String lineNumber);
     void updateVehiclesPositionsOnMap();
     int getLinesVisibleOnMapCount();
+
+    void showAll();
+    void hideAll();
 }

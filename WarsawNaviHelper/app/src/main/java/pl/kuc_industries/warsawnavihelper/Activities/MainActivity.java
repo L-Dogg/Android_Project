@@ -143,6 +143,8 @@ public class MainActivity extends AppCompatActivity
     private Veturilo2MapProvider mVeturiloProvider;
     private IAirPollution2ViewProvider mAirPollutionProvider;
 
+    private boolean showPaidATMs = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -234,15 +236,26 @@ public class MainActivity extends AppCompatActivity
                                                 return true;
                                             }
                                         })
-                        ).withSetSelected(false),
+                        ).withSetSelected(false)
+                        .withOnCheckedChangeListener(new OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
+                                if (isChecked)
+                                    mZTMProvider.showAll();
+                                else
+                                    mZTMProvider.hideAll();
+                            }
+                        }),
                         new ExpandableSwitchDrawerItem().withName("Veturilo").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(20).withSelectable(false).withSubItems(
                                 new SecondarySwitchDrawerItem().withName("Show empty stations").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(200).withSelectable(false)
                         ).withSetSelected(false).withOnCheckedChangeListener(new OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
-                                if(isChecked) {
+                                if(isChecked)
                                     mVeturiloProvider.getStations();
-                                }
+                                else
+                                    mVeturiloProvider.removeStationsfromView();
+
                             }
                         }),
                         new ExpandableSwitchDrawerItem().withName("ATM").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(21).withSelectable(false).withSubItems(
@@ -250,20 +263,31 @@ public class MainActivity extends AppCompatActivity
                                         withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                             @Override
                                             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                                                //TODO: uncomment this, it's temporary for places api test
-                                                /*Context context = view.getContext();
+                                                Context context = view.getContext();
                                                 new MaterialDialog.Builder(context).
                                                         title("Change bank setting").
                                                         items(R.array.bank_types).
-                                                        show();*/
-                                                //TODO: radius input field
-                                                Log.wtf(TAG, "Starting ATM Provider");
-                                                mATMProvider.getATMs(mCurrentLocation, 1500);
+                                                        show();
                                                 return true;
                                             }
                                         }),
-                                new SecondarySwitchDrawerItem().withName("Show free ATMs").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(211).withSelectable(false)
-                        ).withSetSelected(false),
+                                new SecondarySwitchDrawerItem().withName("Show free ATMs").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(211).withSelectable(false).
+                                        withOnCheckedChangeListener(new OnCheckedChangeListener() {
+                                            @Override
+                                            public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
+
+                                            }
+                                        })
+                        ).withSetSelected(false).withOnCheckedChangeListener(new OnCheckedChangeListener() {
+                            @Override
+                            public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
+                                //TODO: radius input field
+                                if (isChecked)
+                                    mATMProvider.getATMs(mCurrentLocation, 1500);
+                                else
+                                    mATMProvider.removeATMsFromMap();
+                            }
+                        }),
                         new ExpandableSwitchDrawerItem().withName("Air Pollution").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).
                                 withIdentifier(20).withSelectable(false).withSubItems(
                                 new SecondaryDrawerItem().withName("Check Air Quality").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(2137).withSelectable(false).
