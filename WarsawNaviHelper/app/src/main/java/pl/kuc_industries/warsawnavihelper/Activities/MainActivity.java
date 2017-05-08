@@ -222,6 +222,14 @@ public class MainActivity extends AppCompatActivity
                                                 new MaterialDialog.Builder(context).
                                                         title("Change default stop").
                                                         items(R.array.tram_and_bus_stops).
+                                                        itemsCallback(new MaterialDialog.ListCallback() {
+                                                            @Override
+                                                            public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                                                                CameraUpdate zoom = CameraUpdateFactory.zoomTo(15);
+                                                                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(Constants.stopToLocationMap.get(text.toString())));
+                                                                mGoogleMap.animateCamera(zoom);
+                                                            }
+                                                        }).
                                                         show();
                                                 return true;
                                             }
