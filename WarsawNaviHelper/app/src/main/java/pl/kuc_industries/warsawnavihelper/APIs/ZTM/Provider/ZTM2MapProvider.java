@@ -73,7 +73,7 @@ public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvid
 
     @Override
     public void showOnMap(TramBus result) {
-        Log.wtf(TAG, String.valueOf(result.getResult().size()));
+        Log.wtf(TAG, "showOnMap, adding results: " + result.getResult().size());
         // todo: this is a hotfix, refactor later
         int idx = 0;
         for (TramBusQueryResult vehicle : result.getResult()) {

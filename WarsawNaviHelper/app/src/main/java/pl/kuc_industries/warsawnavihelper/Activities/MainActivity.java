@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
@@ -11,6 +12,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.Toolbar;
@@ -41,7 +43,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.clustering.ClusterItem;
 import com.mikepenz.google_material_typeface_library.GoogleMaterial;
 import com.mikepenz.itemanimators.AlphaCrossFadeAnimator;
 import com.mikepenz.materialdrawer.AccountHeader;
@@ -143,7 +144,9 @@ public class MainActivity extends AppCompatActivity
     private Veturilo2MapProvider mVeturiloProvider;
     private IAirPollution2ViewProvider mAirPollutionProvider;
 
-    private boolean showPaidATMs = false;
+    private String mBankFilter = null;
+    private String mDefaultBank;
+    private String mDefaultStop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -240,6 +243,7 @@ public class MainActivity extends AppCompatActivity
                         .withOnCheckedChangeListener(new OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
+                                Log.wtf(TAG, "ZTM onCheckedChanged, state = " + isChecked);
                                 if (isChecked)
                                     mZTMProvider.showAll();
                                 else
@@ -267,15 +271,30 @@ public class MainActivity extends AppCompatActivity
                                                 new MaterialDialog.Builder(context).
                                                         title("Change bank setting").
                                                         items(R.array.bank_types).
+                                                        itemsCallback(new MaterialDialog.ListCallback() {
+                                                            @Override
+                                                            public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                                                                mBankFilter = text.toString();
+                                                            }
+                                                        }).
                                                         show();
                                                 return true;
                                             }
                                         }),
-                                new SecondarySwitchDrawerItem().withName("Show free ATMs").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(211).withSelectable(false).
+                                new SecondarySwitchDrawerItem().withName("Show non free ATMs").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(211).withSelectable(false).
                                         withOnCheckedChangeListener(new OnCheckedChangeListener() {
                                             @Override
                                             public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
-
+                                                mATMProvider.removeATMsFromMap();
+                                                //TODO: radius spinner values should be used here
+                                                if (isChecked) {
+                                                    if (mBankFilter != null)
+                                                        mATMProvider.getFilteredATMs(mCurrentLocation, 1500, mBankFilter);
+                                                    else
+                                                        mATMProvider.getFilteredATMs(mCurrentLocation, 1500, mDefaultBank);
+                                                }
+                                                else
+                                                    mATMProvider.getATMs(mCurrentLocation, 1500);
                                             }
                                         })
                         ).withSetSelected(false).withOnCheckedChangeListener(new OnCheckedChangeListener() {
@@ -334,6 +353,12 @@ public class MainActivity extends AppCompatActivity
         mapFragment.getMapAsync(this);
 
         startLocationUpdates();
+    }
+
+    private void getPreferences() {
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        mDefaultBank = prefs.getString(getString(R.string.pref_default_bank), "BPH");
+        mDefaultStop = prefs.getString(getString(R.string.pref_default_stop), "Nowowiejska");
     }
 
     private void updateValuesFromBundle(Bundle savedInstanceState) {
@@ -560,9 +585,9 @@ public class MainActivity extends AppCompatActivity
         mATMProvider = new ATM2MapProvider(mATMClusterManager);
         mZTMProvider = new ZTM2MapProvider(mZTMClusterManager);
         mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager);
-        mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
+        /*mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
-                ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
+                ZTM_UPDATE_INTERVAL_IN_MILISECONDS);*/
     }
 
     public void centerMapOnCurrentLocation() {

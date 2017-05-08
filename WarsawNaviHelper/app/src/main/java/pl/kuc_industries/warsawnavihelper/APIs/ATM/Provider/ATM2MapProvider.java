@@ -28,7 +28,7 @@ public class ATM2MapProvider implements IATM2ControllerProvider, IATM2ViewProvid
     }
 
     @Override
-    public void getFileredATMs(Location location, int radius, String filter) {
+    public void getFilteredATMs(Location location, int radius, String filter) {
         mAtmController.getFilteredATMs(location, radius, filter);
     }
 
