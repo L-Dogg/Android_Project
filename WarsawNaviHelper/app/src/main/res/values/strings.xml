@@ -104,4 +104,20 @@
         <item>Wawelska</item>
         <item>Metro Marymont</item>
     </string-array>
+
+    <string-array name="polish_air_pollution_desc">
+        <item>Bardzo dobry</item>
+        <item>Dobry</item>
+        <item>Umiarkowany</item>
+        <item>Zły</item>
+        <item>Bardzo zły</item>
+    </string-array>
+
+    <string-array name="english_air_pollution_desc">
+        <item>Very good</item>
+        <item>Good</item>
+        <item>Moderate</item>
+        <item>Bad</item>
+        <item>Very bad</item>
+    </string-array>
 </resources>

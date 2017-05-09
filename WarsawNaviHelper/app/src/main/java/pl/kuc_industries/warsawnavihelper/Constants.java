@@ -47,7 +47,21 @@ public final class Constants {
     public static final String UM_API_KEY = "b2404019-9b1d-4ff5-9969-af137b28c7da";
     public static final String PLACES_API_KEY = "AIzaSyAPoTqS0Kf17U-AvqA3lNMl18GjxqLEL5w";
 
+    // It maps stop from json data to location, so we can focus map on the stop
     public static Map<String, LatLng> stopToLocationMap;
+
+    public static Map<String, String> polishToEnglishDescrptionsMap;
+
+    public static void initializePolishToEnglishDescrptionMap(Context ctx) {
+        polishToEnglishDescrptionsMap = new HashMap<>();
+        String[] polish = ctx.getResources().getStringArray(R.array.polish_air_pollution_desc);
+        String[] english = ctx.getResources().getStringArray(R.array.english_air_pollution_desc);
+
+        for(int i = 0; i < polish.length; i++) {
+            polishToEnglishDescrptionsMap.put(polish[i], english[i]);
+        }
+    }
+
 
     public static void initializeStopToLocationMap(Context ctx) throws IOException, JSONException {
         stopToLocationMap = new HashMap<>();

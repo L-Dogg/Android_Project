@@ -155,6 +155,7 @@ public class MainActivity extends AppCompatActivity
 
         try {
             Constants.initializeStopToLocationMap(getApplicationContext());
+            Constants.initializePolishToEnglishDescrptionMap(getApplicationContext());
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -162,7 +163,7 @@ public class MainActivity extends AppCompatActivity
         }
 
         mResultReceiver = new AddressResultReceiver(new Handler());
-        mAirPollutionProvider = new AirPollutionProvider();
+        mAirPollutionProvider = new AirPollutionProvider(this);
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
