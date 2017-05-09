@@ -35,6 +35,7 @@ public class ATM2MapProvider implements IATM2ControllerProvider, IATM2ViewProvid
     @Override
     public void removeATMsFromMap() {
         mClusterManager.clearItems();
+        mClusterManager.clearItems();
     }
 
     @Override
@@ -46,5 +47,6 @@ public class ATM2MapProvider implements IATM2ControllerProvider, IATM2ViewProvid
                     new AtmItem(atm.getName(), new LatLng(loc.getLat(), loc.getLng()), "TEMPORARY")
             );
         }
+        mClusterManager.cluster();
     }
 }

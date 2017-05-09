@@ -585,9 +585,9 @@ public class MainActivity extends AppCompatActivity
         mATMProvider = new ATM2MapProvider(mATMClusterManager);
         mZTMProvider = new ZTM2MapProvider(mZTMClusterManager);
         mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager);
-        /*mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
+        mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
-                ZTM_UPDATE_INTERVAL_IN_MILISECONDS);*/
+                ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
     }
 
     public void centerMapOnCurrentLocation() {

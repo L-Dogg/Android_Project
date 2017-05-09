@@ -37,6 +37,7 @@ public class Veturilo2MapProvider implements IVeturilo2ViewProvider, IVeturilo2C
     @Override
     public void removeStationsfromView() {
         mClusterManager.clearItems();
+        mClusterManager.cluster();
     }
 
     @Override

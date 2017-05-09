@@ -87,6 +87,7 @@ public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvid
                 mVehiclesVisibleOnMap.add(vehicleItem);
             idx++;
         }
+        mClusterManager.cluster();
     }
 
     @Override
@@ -100,6 +101,7 @@ public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvid
     @Override
     public void hideAll() {
         mClusterManager.clearItems();
+        mClusterManager.cluster();
     }
 
 }
