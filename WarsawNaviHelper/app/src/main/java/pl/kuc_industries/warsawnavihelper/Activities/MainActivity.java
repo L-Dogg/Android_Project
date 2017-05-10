@@ -52,7 +52,6 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondarySwitchDrawerItem;
-import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.io.IOException;
@@ -81,6 +80,7 @@ import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.AirPollutio
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.Provider.IAirPollution2ViewProvider;
 import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.MapUtils.VeturiloItem;
 import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.Provider.Veturilo2MapProvider;
+import pl.kuc_industries.warsawnavihelper.APIs.Veturilo.VeturiloUpdater;
 import pl.kuc_industries.warsawnavihelper.Constants;
 import pl.kuc_industries.warsawnavihelper.FetchAddressIntentService;
 import pl.kuc_industries.warsawnavihelper.Models.TramAndBusLine;
@@ -109,6 +109,7 @@ public class MainActivity extends AppCompatActivity
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     public static final long ZTM_UPDATE_INTERVAL_IN_MILISECONDS = 5000;
+    private Timer mVeturiloTimer;
     private Timer mZTMTimer;
 
     // Keys for storing activity state in the Bundle.
@@ -150,6 +151,7 @@ public class MainActivity extends AppCompatActivity
     private String mDefaultStop;
     private SecondaryDrawerItem mAirPollutionDrawerItem;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -172,6 +174,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(mToolbar);
 
         mZTMTimer = new Timer("ZTMUpdater", true);
+        mVeturiloTimer = new Timer("VeturiloUpdater", true);
 
         AccountHeader headerResult = new AccountHeaderBuilder()
                 .withActivity(this)
@@ -273,7 +276,7 @@ public class MainActivity extends AppCompatActivity
                                 if(isChecked)
                                     mVeturiloProvider.getStations();
                                 else
-                                    mVeturiloProvider.removeStationsfromView();
+                                    mVeturiloProvider.removeStationsFromView();
 
                             }
                         }),
@@ -593,6 +596,9 @@ public class MainActivity extends AppCompatActivity
         mZTMProvider = new ZTM2MapProvider(mZTMClusterManager);
         mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager);
         mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
+                2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
+                ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
+        mVeturiloTimer.scheduleAtFixedRate(new VeturiloUpdater(mVeturiloProvider),
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
                 ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
     }
