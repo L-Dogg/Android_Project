@@ -114,8 +114,8 @@
     </string-array>
 
     <string-array name="english_air_pollution_desc">
-        <item>Very good</item>
-        <item>Good</item>
+        <item>Great</item>
+        <item>Ok</item>
         <item>Moderate</item>
         <item>Bad</item>
         <item>Very bad</item>

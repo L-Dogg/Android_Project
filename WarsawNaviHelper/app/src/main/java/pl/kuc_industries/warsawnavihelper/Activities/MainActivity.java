@@ -52,6 +52,7 @@ import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondarySwitchDrawerItem;
+import com.mikepenz.materialdrawer.model.SectionDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.io.IOException;
@@ -147,6 +148,7 @@ public class MainActivity extends AppCompatActivity
     private String mBankFilter = null;
     private String mDefaultBank;
     private String mDefaultStop;
+    private SecondaryDrawerItem mAirPollutionDrawerItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,7 +165,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         mResultReceiver = new AddressResultReceiver(new Handler());
-        mAirPollutionProvider = new AirPollutionProvider(this);
 
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
@@ -182,6 +183,19 @@ public class MainActivity extends AppCompatActivity
         mBusLines = getBusLines();
 
         //region Material Drawer build
+
+        mAirPollutionDrawerItem = new SecondaryDrawerItem().withName("Check Air Quality")
+            .withBadge("NA").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark)
+            .withIdentifier(2137).withSelectable(false).withOnDrawerItemClickListener(
+                new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        Log.wtf(TAG, "Update air pollution data");
+                        mAirPollutionProvider.UpdateAirPollutionData();
+                        return true;
+                    }
+                }).withSetSelected(false);
+
         result = new DrawerBuilder()
                 .withActivity(this)
                 .withToolbar(mToolbar)
@@ -308,25 +322,17 @@ public class MainActivity extends AppCompatActivity
                                     mATMProvider.removeATMsFromMap();
                             }
                         }),
-                        new ExpandableSwitchDrawerItem().withName("Air Pollution").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).
-                                withIdentifier(20).withSelectable(false).withSubItems(
-                                new SecondaryDrawerItem().withName("Check Air Quality").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(2137).withSelectable(false).
-                                        withOnDrawerItemClickListener(
-                                                new Drawer.OnDrawerItemClickListener() {
-                                                    @Override
-                                                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
-                                                        Log.wtf(TAG, "Update air pollution data");
-                                                        mAirPollutionProvider.UpdateAirPollutionData();
-                                                        return true;
-                                                    }
-                                                }
-                                        )).withSetSelected(false)
-
+                        new ExpandableSwitchDrawerItem()
+                                .withName("Air Pollution").withIcon(GoogleMaterial.Icon.gmd_collection_case_play)
+                                .withIdentifier(20).withSelectable(false).withSubItems(
+                                    mAirPollutionDrawerItem)
                 )
                 .withSavedInstance(savedInstanceState)
                 .withShowDrawerOnFirstLaunch(true)
                 .build();
         //endregion
+
+        mAirPollutionProvider = new AirPollutionProvider(this, mAirPollutionDrawerItem, result);
 
         getSupportActionBar().hide();
 

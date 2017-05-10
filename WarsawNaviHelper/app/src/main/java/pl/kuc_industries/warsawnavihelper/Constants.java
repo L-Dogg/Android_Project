@@ -1,6 +1,7 @@
 package pl.kuc_industries.warsawnavihelper;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.location.Location;
 import android.util.Log;
 
@@ -49,8 +50,8 @@ public final class Constants {
 
     // It maps stop from json data to location, so we can focus map on the stop
     public static Map<String, LatLng> stopToLocationMap;
-
     public static Map<String, String> polishToEnglishDescrptionsMap;
+    public static Map<String, Integer> badgeTextToColorMap;
 
     public static void initializePolishToEnglishDescrptionMap(Context ctx) {
         polishToEnglishDescrptionsMap = new HashMap<>();
@@ -60,6 +61,13 @@ public final class Constants {
         for(int i = 0; i < polish.length; i++) {
             polishToEnglishDescrptionsMap.put(polish[i], english[i]);
         }
+
+        badgeTextToColorMap = new HashMap<>();
+        badgeTextToColorMap.put(english[0], Color.GREEN);
+        badgeTextToColorMap.put(english[1], Color.GREEN);
+        badgeTextToColorMap.put(english[2], Color.YELLOW);
+        badgeTextToColorMap.put(english[3], Color.RED);
+        badgeTextToColorMap.put(english[4], Color.RED);
     }
 
 
