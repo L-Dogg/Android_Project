@@ -50,8 +50,11 @@ import com.mikepenz.materialdrawer.AccountHeaderBuilder;
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.DrawerBuilder;
 import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondarySwitchDrawerItem;
+import com.mikepenz.materialdrawer.model.SecondaryToggleDrawerItem;
+import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.io.IOException;
@@ -109,6 +112,7 @@ public class MainActivity extends AppCompatActivity
             UPDATE_INTERVAL_IN_MILLISECONDS / 2;
 
     public static final long ZTM_UPDATE_INTERVAL_IN_MILISECONDS = 5000;
+    private static final long VETURILO_UPDATE_INTERVAL_IN_MILISECONDS = 30000;
     private Timer mVeturiloTimer;
     private Timer mZTMTimer;
 
@@ -149,7 +153,8 @@ public class MainActivity extends AppCompatActivity
     private String mBankFilter = null;
     private String mDefaultBank;
     private String mDefaultStop;
-    private SecondaryDrawerItem mAirPollutionDrawerItem;
+    private PrimaryDrawerItem mAirPollutionDrawerItem;
+    private int mATMRadius;
 
 
     @Override
@@ -187,8 +192,8 @@ public class MainActivity extends AppCompatActivity
 
         //region Material Drawer build
 
-        mAirPollutionDrawerItem = new SecondaryDrawerItem().withName("Check Air Quality")
-            .withBadge("NA").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark)
+        mAirPollutionDrawerItem = new PrimaryDrawerItem().withName("Air Pollution")
+            .withBadge("NA").withIcon(GoogleMaterial.Icon.gmd_cloud)
             .withIdentifier(2137).withSelectable(false).withOnDrawerItemClickListener(
                 new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -206,8 +211,8 @@ public class MainActivity extends AppCompatActivity
                 .withItemAnimator(new AlphaCrossFadeAnimator())
                 .withAccountHeader(headerResult)
                 .addDrawerItems(
-                        new ExpandableSwitchDrawerItem().withName("Tram and Bus").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(19).withSelectable(false).withSubItems(
-                                new SecondaryDrawerItem().withName("Trams").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(190).withSelectable(false).
+                        new ExpandableSwitchDrawerItem().withName("Tram and Bus").withIcon(GoogleMaterial.Icon.gmd_transform).withIdentifier(19).withSelectable(false).withSubItems(
+                                new SecondaryDrawerItem().withName("Trams").withIcon(GoogleMaterial.Icon.gmd_directions_railway).withIdentifier(190).withSelectable(false).
                                         withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                             @Override
                                             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -222,7 +227,7 @@ public class MainActivity extends AppCompatActivity
                                                 return true;
                                             }
                                         }),
-                                new SecondaryDrawerItem().withName("Buses").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(191).withSelectable(true).
+                                new SecondaryDrawerItem().withName("Buses").withIcon(GoogleMaterial.Icon.gmd_directions_bus).withIdentifier(191).withSelectable(true).
                                         withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                             @Override
                                             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -237,7 +242,7 @@ public class MainActivity extends AppCompatActivity
                                                 return true;
                                             }
                                         }),
-                                new SecondaryDrawerItem().withName("Stops").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(192).withSelectable(true).
+                                new SecondaryDrawerItem().withName("Stops").withIcon(GoogleMaterial.Icon.gmd_directions_walk).withIdentifier(192).withSelectable(true).
                                         withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                             @Override
                                             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -268,20 +273,22 @@ public class MainActivity extends AppCompatActivity
                                     mZTMProvider.hideAll();
                             }
                         }),
-                        new ExpandableSwitchDrawerItem().withName("Veturilo").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(20).withSelectable(false).withSubItems(
-                                new SecondarySwitchDrawerItem().withName("Show empty stations").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(200).withSelectable(false)
+                        new ExpandableSwitchDrawerItem().withName("Veturilo").withIcon(GoogleMaterial.Icon.gmd_bike).withIdentifier(20).withSelectable(false).withSubItems(
+                                new SecondarySwitchDrawerItem().withName("Show empty stations").withIcon(GoogleMaterial.Icon.gmd_block_alt).withIdentifier(200).withSelectable(false).
+                                        withOnCheckedChangeListener(new OnCheckedChangeListener() {
+                                            @Override
+                                            public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
+                                                mVeturiloProvider.setEmptyStationsVisible(isChecked);
+                                            }
+                                        })
                         ).withSetSelected(false).withOnCheckedChangeListener(new OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
-                                if(isChecked)
-                                    mVeturiloProvider.getStations();
-                                else
-                                    mVeturiloProvider.removeStationsFromView();
-
+                                mVeturiloProvider.setStationsVisible(isChecked);
                             }
                         }),
-                        new ExpandableSwitchDrawerItem().withName("ATM").withIcon(GoogleMaterial.Icon.gmd_collection_case_play).withIdentifier(21).withSelectable(false).withSubItems(
-                                new SecondaryDrawerItem().withName("Custom bank").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(210).withSelectable(false).
+                        new ExpandableSwitchDrawerItem().withName("ATM").withIcon(GoogleMaterial.Icon.gmd_local_atm).withIdentifier(21).withSelectable(false).withSubItems(
+                                new SecondaryDrawerItem().withName("Custom bank").withIcon(GoogleMaterial.Icon.gmd_balance_wallet).withIdentifier(210).withSelectable(false).
                                         withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                                             @Override
                                             public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
@@ -299,7 +306,7 @@ public class MainActivity extends AppCompatActivity
                                                 return true;
                                             }
                                         }),
-                                new SecondarySwitchDrawerItem().withName("Show non free ATMs").withIcon(GoogleMaterial.Icon.gmd_collection_bookmark).withIdentifier(211).withSelectable(false).
+                                new SecondarySwitchDrawerItem().withName("Show non free ATMs").withIcon(GoogleMaterial.Icon.gmd_money).withIdentifier(211).withSelectable(false).
                                         withOnCheckedChangeListener(new OnCheckedChangeListener() {
                                             @Override
                                             public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
@@ -314,6 +321,26 @@ public class MainActivity extends AppCompatActivity
                                                 else
                                                     mATMProvider.getATMs(mCurrentLocation, 1500);
                                             }
+                                        }),
+                                new SecondaryDrawerItem().withName("Select radius detection").withIcon(GoogleMaterial.Icon.gmd_remote_control).withIdentifier(212).withSelectable(false).
+                                        withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                                            @Override
+                                            public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                                                Context context = view.getContext();
+                                                new MaterialDialog.Builder(context).
+                                                        title("Change ATM Radius").
+                                                        items(R.array.atm_radius_values).
+                                                        itemsCallback(new MaterialDialog.ListCallback() {
+                                                            @Override
+                                                            public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                                                                if (position > 0) {
+                                                                    mATMRadius = Integer.parseInt(text.toString());
+                                                                }
+                                                            }
+                                                        }).
+                                                        show();
+                                                return true;
+                                            }
                                         })
                         ).withSetSelected(false).withOnCheckedChangeListener(new OnCheckedChangeListener() {
                             @Override
@@ -325,10 +352,7 @@ public class MainActivity extends AppCompatActivity
                                     mATMProvider.removeATMsFromMap();
                             }
                         }),
-                        new ExpandableSwitchDrawerItem()
-                                .withName("Air Pollution").withIcon(GoogleMaterial.Icon.gmd_collection_case_play)
-                                .withIdentifier(20).withSelectable(false).withSubItems(
-                                    mAirPollutionDrawerItem)
+                        mAirPollutionDrawerItem
                 )
                 .withSavedInstance(savedInstanceState)
                 .withShowDrawerOnFirstLaunch(true)
@@ -599,8 +623,8 @@ public class MainActivity extends AppCompatActivity
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
                 ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
         mVeturiloTimer.scheduleAtFixedRate(new VeturiloUpdater(mVeturiloProvider),
-                2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
-                ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
+                2 * VETURILO_UPDATE_INTERVAL_IN_MILISECONDS,
+                VETURILO_UPDATE_INTERVAL_IN_MILISECONDS);
     }
 
     public void centerMapOnCurrentLocation() {
@@ -792,7 +816,7 @@ public class MainActivity extends AppCompatActivity
         public VeturiloItemRenderer(Context context, GoogleMap map, ClusterManager<VeturiloItem> clusterManager) {
             super(context, map, clusterManager);
 
-            View multiProfile = getLayoutInflater().inflate(R.layout.vehicle_marker, null);
+            View multiProfile = getLayoutInflater().inflate(R.layout.station_marker, null);
             mClusterIconGenerator.setContentView(multiProfile);
             mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
 
@@ -822,13 +846,13 @@ public class MainActivity extends AppCompatActivity
             Drawable clusterImage = getDrawable(R.mipmap.veturilo);
 
             mClusterImageView.setImageDrawable(clusterImage);
-            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+            Bitmap icon = mClusterIconGenerator.makeIcon();
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
         }
 
         @Override
         protected boolean shouldRenderAsCluster(Cluster<VeturiloItem> cluster) {
-            return cluster.getSize() > 7;
+            return cluster.getSize() > 3;
         }
     }
 }

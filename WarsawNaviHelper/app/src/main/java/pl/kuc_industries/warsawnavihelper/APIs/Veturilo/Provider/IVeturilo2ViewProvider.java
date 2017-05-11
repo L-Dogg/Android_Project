@@ -8,4 +8,6 @@ public interface IVeturilo2ViewProvider {
     void getStations();
     void updateStationsOnView();
     void removeStationsFromView();
+    boolean areEmptyStationsVisible();
+    void setEmptyStationsVisible(boolean emptyStationsVisible);
 }

@@ -7,7 +7,9 @@ import android.widget.Toast;
 
 import com.mikepenz.materialdrawer.Drawer;
 import com.mikepenz.materialdrawer.holder.BadgeStyle;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.AirPollutionController;
 import pl.kuc_industries.warsawnavihelper.APIs.AirPollution.QueryResult.AirPollution;
@@ -21,12 +23,12 @@ public class AirPollutionProvider implements IAirPollution2ControllerProvider, I
     private final AirPollutionController mAirPollutionController;
 
     private final Context mContext;
-    private final SecondaryDrawerItem mAirPollutionDrawerItem;
+    private final PrimaryDrawerItem mAirPollutionDrawerItem;
     private final Drawer mDrawer;
 
     //TODO: passing Context so we can see Toast with information
     //We can change this after there's an indicator in the drawer
-    public AirPollutionProvider(Context ctx, SecondaryDrawerItem drawerItem, Drawer drawer) {
+    public AirPollutionProvider(Context ctx, PrimaryDrawerItem drawerItem, Drawer drawer) {
         mAirPollutionController = new AirPollutionController(this);
         mContext = ctx;
         mAirPollutionDrawerItem = drawerItem;
