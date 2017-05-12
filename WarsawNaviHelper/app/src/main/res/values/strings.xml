@@ -120,6 +120,7 @@
         <item>Bad</item>
         <item>Very bad</item>
     </string-array>
+
     <string-array name="atm_radius_values">
         <item>OFF</item>
         <item>100</item>

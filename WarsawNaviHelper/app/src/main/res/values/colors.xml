@@ -16,4 +16,10 @@
     <color name="transclucent_white">#B0FFFFFF</color>
     <color name="tram_bus_line_visible_bg_color">#D3D3D3</color>
     <color name="tram_bus_line_invisible_bg_color">#FFFFFF</color>
+    
+    <color name="greatAirQualityColor">#388e3c</color>
+    <color name="okAirQualityColor">#689f38</color>
+    <color name="moderateAirQualityColor">#ffc107</color>
+    <color name="badAirQualityColor">#ffa000</color>
+    <color name="veryBadAirQualityColor">#e64a19</color>
 </resources>

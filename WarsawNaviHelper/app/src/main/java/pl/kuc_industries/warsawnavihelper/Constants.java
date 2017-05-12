@@ -3,6 +3,7 @@ package pl.kuc_industries.warsawnavihelper;
 import android.content.Context;
 import android.graphics.Color;
 import android.location.Location;
+import android.support.v4.content.res.ResourcesCompat;
 import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -63,11 +64,16 @@ public final class Constants {
         }
 
         badgeTextToColorMap = new HashMap<>();
-        badgeTextToColorMap.put(english[0], Color.GREEN);
-        badgeTextToColorMap.put(english[1], Color.GREEN);
-        badgeTextToColorMap.put(english[2], Color.YELLOW);
-        badgeTextToColorMap.put(english[3], Color.RED);
-        badgeTextToColorMap.put(english[4], Color.RED);
+        badgeTextToColorMap.put(english[0],
+                ResourcesCompat.getColor(ctx.getResources(), R.color.greatAirQualityColor, null));
+        badgeTextToColorMap.put(english[1],
+                ResourcesCompat.getColor(ctx.getResources(), R.color.okAirQualityColor, null));
+        badgeTextToColorMap.put(english[2],
+                ResourcesCompat.getColor(ctx.getResources(), R.color.moderateAirQualityColor, null));
+        badgeTextToColorMap.put(english[3],
+                ResourcesCompat.getColor(ctx.getResources(), R.color.badAirQualityColor, null));
+        badgeTextToColorMap.put(english[4],
+                ResourcesCompat.getColor(ctx.getResources(), R.color.veryBadAirQualityColor, null));
     }
 
 
