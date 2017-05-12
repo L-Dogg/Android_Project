@@ -1,14 +1,17 @@
 package pl.kuc_industries.warsawnavihelper.Activities;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.ResultReceiver;
@@ -104,7 +107,16 @@ public class MainActivity extends AppCompatActivity
         ConnectionCallbacks,
         OnConnectionFailedListener,
         LocationListener {
+    // region Fields
     protected static final String TAG = "MainActivity";
+
+    private final static String[] mPermissions = {Manifest.permission.INTERNET,
+            Manifest.permission.ACCESS_NETWORK_STATE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION};
+
+    private static final int INITIAL_REQUEST = 1337;
 
     protected static final int REQUEST_CHECK_SETTINGS = 0x1;
     public static final long UPDATE_INTERVAL_IN_MILLISECONDS = 10000;
@@ -155,7 +167,7 @@ public class MainActivity extends AppCompatActivity
     private String mDefaultStop;
     private PrimaryDrawerItem mAirPollutionDrawerItem;
     private int mATMRadius;
-
+    //endregion
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -311,10 +323,9 @@ public class MainActivity extends AppCompatActivity
                                             @Override
                                             public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
                                                 mATMProvider.removeATMsFromMap();
-                                                //TODO: radius spinner values should be used here
                                                 if (isChecked) {
                                                     if (mBankFilter != null)
-                                                        mATMProvider.getFilteredATMs(mCurrentLocation, 1500, mBankFilter);
+                                                        mATMProvider.getFilteredATMs(mCurrentLocation, mATMRadius, mBankFilter);
                                                     else
                                                         mATMProvider.getFilteredATMs(mCurrentLocation, 1500, mDefaultBank);
                                                 }
@@ -374,8 +385,13 @@ public class MainActivity extends AppCompatActivity
         mLastUpdateTime = "";
 
         // Update values using data stored in the Bundle.
+        if (!canAccessLocation()) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                requestPermissions(mPermissions, INITIAL_REQUEST);
+            }
+        }
         updateValuesFromBundle(savedInstanceState);
-
+        getPreferences();
         buildGoogleApiClient();
         createLocationRequest();
         buildLocationSettingsRequest();
@@ -385,8 +401,6 @@ public class MainActivity extends AppCompatActivity
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
-        startLocationUpdates();
     }
 
     private void getPreferences() {
@@ -504,6 +518,18 @@ public class MainActivity extends AppCompatActivity
                 mRequestingLocationUpdates = false;
             }
         });
+    }
+
+    private boolean hasPermission(String perm) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            return(PackageManager.PERMISSION_GRANTED == checkSelfPermission(perm));
+        else
+            return true;
+    }
+
+    private boolean canAccessLocation() {
+        return(hasPermission(Manifest.permission.ACCESS_FINE_LOCATION) &&
+                hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION));
     }
 
     @Override
