@@ -9,4 +9,6 @@ public interface IZTM2ViewProvider {
 
     void showAll();
     void hideAll();
+
+    boolean getVisibility();
 }

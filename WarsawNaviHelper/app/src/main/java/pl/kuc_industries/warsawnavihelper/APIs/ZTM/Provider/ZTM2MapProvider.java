@@ -22,6 +22,8 @@ public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvid
     private VehicleType currentItemType;
     private List<VehicleItem> mVehiclesVisibleOnMap;
 
+    private boolean mVisibility = false;
+
     public ZTM2MapProvider(ClusterManager<VehicleItem> cluster) {
         this.mClusterManager = cluster;
         this.ztmController = new ZTMController(this);
@@ -58,6 +60,10 @@ public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvid
 
     @Override
     public void updateVehiclesPositionsOnMap() {
+
+        Log.wtf(TAG, "updateVehiclesPositionsOnMap, Lines visible = " + mVehiclesVisibleOnMap.size()
+                + " Vehicles visible = " + mClusterManager.getMarkerCollection().getMarkers().size());
+
         mClusterManager.clearItems();
         List<VehicleItem> tmp = new LinkedList<>(mVehiclesVisibleOnMap);
         mVehiclesVisibleOnMap.clear();
@@ -74,7 +80,7 @@ public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvid
     @Override
     public void showOnMap(TramBus result) {
         Log.wtf(TAG, "showOnMap, adding results: " + result.getResult().size());
-        // todo: this is a hotfix, refactor later
+
         int idx = 0;
         for (TramBusQueryResult vehicle : result.getResult()) {
             VehicleItem vehicleItem= new VehicleItem(vehicle.getLat(),
@@ -96,12 +102,19 @@ public class ZTM2MapProvider implements IZTM2ControllerProvider, IZTM2ViewProvid
     @Override
     public void showAll() {
         updateVehiclesPositionsOnMap();
+        mVisibility = true;
     }
 
     @Override
     public void hideAll() {
         mClusterManager.clearItems();
         mClusterManager.cluster();
+        mVisibility = false;
+    }
+
+    @Override
+    public boolean getVisibility() {
+        return mVisibility;
     }
 
 }

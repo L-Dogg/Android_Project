@@ -35,7 +35,7 @@ public class ATM2MapProvider implements IATM2ControllerProvider, IATM2ViewProvid
     @Override
     public void removeATMsFromMap() {
         mClusterManager.clearItems();
-        mClusterManager.clearItems();
+        mClusterManager.cluster();
     }
 
     @Override
