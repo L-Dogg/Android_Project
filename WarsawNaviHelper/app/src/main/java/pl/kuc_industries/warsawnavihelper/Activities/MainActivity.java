@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity
     private String mDefaultStop;
     private PrimaryDrawerItem mAirPollutionDrawerItem;
     private int mATMRadius;
-
+    private boolean mAreATMsFiltered = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -311,15 +311,12 @@ public class MainActivity extends AppCompatActivity
                                             @Override
                                             public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
                                                 mATMProvider.removeATMsFromMap();
-                                                //TODO: radius spinner values should be used here
-                                                if (isChecked) {
-                                                    if (mBankFilter != null)
-                                                        mATMProvider.getFilteredATMs(mCurrentLocation, 1500, mBankFilter);
-                                                    else
-                                                        mATMProvider.getFilteredATMs(mCurrentLocation, 1500, mDefaultBank);
-                                                }
+                                                int radius = mATMRadius != 0 ? mATMRadius : 1500;
+                                                mAreATMsFiltered = !isChecked;
+                                                if (isChecked)
+                                                    mATMProvider.getATMs(mCurrentLocation, radius);
                                                 else
-                                                    mATMProvider.getATMs(mCurrentLocation, 1500);
+                                                    mATMProvider.getFilteredATMs(mCurrentLocation, radius, mBankFilter);
                                             }
                                         }),
                                 new SecondaryDrawerItem().withName("Select radius detection").withIcon(GoogleMaterial.Icon.gmd_remote_control).withIdentifier(212).withSelectable(false).
@@ -345,9 +342,13 @@ public class MainActivity extends AppCompatActivity
                         ).withSetSelected(false).withOnCheckedChangeListener(new OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
-                                //TODO: radius input field
-                                if (isChecked)
-                                    mATMProvider.getATMs(mCurrentLocation, 1500);
+                                if (isChecked) {
+                                    int radius = mATMRadius != 0 ? mATMRadius : 1500;
+                                    if (mAreATMsFiltered)
+                                        mATMProvider.getFilteredATMs(mCurrentLocation, radius, mBankFilter);
+                                    else
+                                        mATMProvider.getATMs(mCurrentLocation, radius);
+                                }
                                 else
                                     mATMProvider.removeATMsFromMap();
                             }
@@ -380,7 +381,7 @@ public class MainActivity extends AppCompatActivity
         createLocationRequest();
         buildLocationSettingsRequest();
 
-        Log.wtf(TAG, "onCreate() before new fragment");
+        getPreferences();
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -392,6 +393,7 @@ public class MainActivity extends AppCompatActivity
     private void getPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         mDefaultBank = prefs.getString(getString(R.string.pref_default_bank), "BPH");
+        mBankFilter = mDefaultBank;
         mDefaultStop = prefs.getString(getString(R.string.pref_default_stop), "Nowowiejska");
     }
 
