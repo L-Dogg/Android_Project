@@ -652,7 +652,14 @@ public class MainActivity extends AppCompatActivity
 
         mATMProvider = new ATM2MapProvider(mATMClusterManager);
         mZTMProvider = new ZTM2MapProvider(mZTMClusterManager);
-        mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager, mCurrentLocation);
+        Location loc = mCurrentLocation;
+        if (loc == null)
+        {
+            loc = new Location("mVeturiloProvider");
+            loc.setLatitude(52.232222);
+            loc.setLongitude(21.008333);
+        }
+        mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager, loc);
         mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
                 ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
