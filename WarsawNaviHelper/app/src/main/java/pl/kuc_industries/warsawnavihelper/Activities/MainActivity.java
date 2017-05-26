@@ -581,6 +581,7 @@ public class MainActivity extends AppCompatActivity
         if (prevState == null)
             centerMapOnCurrentLocation();
 
+        mVeturiloProvider.setLocation(mCurrentLocation);
         mAddressRequested = true;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         startIntentService();
@@ -620,7 +621,7 @@ public class MainActivity extends AppCompatActivity
 
         mATMProvider = new ATM2MapProvider(mATMClusterManager);
         mZTMProvider = new ZTM2MapProvider(mZTMClusterManager);
-        mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager);
+        mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager, mCurrentLocation);
         mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
                 ZTM_UPDATE_INTERVAL_IN_MILISECONDS);
