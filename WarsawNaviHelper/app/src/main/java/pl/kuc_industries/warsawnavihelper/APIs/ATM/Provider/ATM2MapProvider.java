@@ -43,8 +43,11 @@ public class ATM2MapProvider implements IATM2ControllerProvider, IATM2ViewProvid
         for (ATM atm : atmList) {
             pl.kuc_industries.warsawnavihelper.APIs.ATM.QueryResult.Location
                     loc = atm.getGeometry().getLocation();
+            String snippet = atm.getOpeningHours() != null
+                    ? atm.getOpeningHours().getOpenNow() ? "Open" : "Closed"
+                    : "Unknown";
             mClusterManager.addItem(
-                    new AtmItem(atm.getName(), new LatLng(loc.getLat(), loc.getLng()), "TEMPORARY")
+                    new AtmItem(atm.getName(), new LatLng(loc.getLat(), loc.getLng()), snippet)
             );
         }
         mClusterManager.cluster();

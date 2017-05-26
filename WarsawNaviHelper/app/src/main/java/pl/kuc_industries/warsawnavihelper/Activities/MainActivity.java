@@ -167,7 +167,9 @@ public class MainActivity extends AppCompatActivity
     private String mDefaultStop;
     private PrimaryDrawerItem mAirPollutionDrawerItem;
     private int mATMRadius;
+    private boolean mAreATMsFiltered = false;
     //endregion
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -356,9 +358,13 @@ public class MainActivity extends AppCompatActivity
                         ).withSetSelected(false).withOnCheckedChangeListener(new OnCheckedChangeListener() {
                             @Override
                             public void onCheckedChanged(IDrawerItem drawerItem, CompoundButton buttonView, boolean isChecked) {
-                                //TODO: radius input field
-                                if (isChecked)
-                                    mATMProvider.getATMs(mCurrentLocation, 1500);
+                                if (isChecked) {
+                                    int radius = mATMRadius != 0 ? mATMRadius : 1500;
+                                    if (mAreATMsFiltered)
+                                        mATMProvider.getFilteredATMs(mCurrentLocation, radius, mBankFilter);
+                                    else
+                                        mATMProvider.getATMs(mCurrentLocation, radius);
+                                }
                                 else
                                     mATMProvider.removeATMsFromMap();
                             }
@@ -396,7 +402,7 @@ public class MainActivity extends AppCompatActivity
         createLocationRequest();
         buildLocationSettingsRequest();
 
-        Log.wtf(TAG, "onCreate() before new fragment");
+        getPreferences();
 
         SupportMapFragment mapFragment =
                 (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -406,6 +412,7 @@ public class MainActivity extends AppCompatActivity
     private void getPreferences() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         mDefaultBank = prefs.getString(getString(R.string.pref_default_bank), "BPH");
+        mBankFilter = mDefaultBank;
         mDefaultStop = prefs.getString(getString(R.string.pref_default_stop), "Nowowiejska");
     }
 
@@ -605,6 +612,7 @@ public class MainActivity extends AppCompatActivity
         if (prevState == null)
             centerMapOnCurrentLocation();
 
+        mVeturiloProvider.setLocation(mCurrentLocation);
         mAddressRequested = true;
         mLastUpdateTime = DateFormat.getTimeInstance().format(new Date());
         startIntentService();
@@ -644,7 +652,7 @@ public class MainActivity extends AppCompatActivity
 
         mATMProvider = new ATM2MapProvider(mATMClusterManager);
         mZTMProvider = new ZTM2MapProvider(mZTMClusterManager);
-        mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager);
+        mVeturiloProvider = new Veturilo2MapProvider(mVeturiloClusterManager, mCurrentLocation);
         mZTMTimer.scheduleAtFixedRate(new TramAndBusMapUpdater(mZTMProvider),
                 2 * ZTM_UPDATE_INTERVAL_IN_MILISECONDS,
                 ZTM_UPDATE_INTERVAL_IN_MILISECONDS);

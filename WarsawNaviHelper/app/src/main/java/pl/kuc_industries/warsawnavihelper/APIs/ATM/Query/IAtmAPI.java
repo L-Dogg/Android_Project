@@ -15,6 +15,7 @@ public interface IAtmAPI {
             @Query("type") String type,
             @Query("key") String key);
 
+    @GET("nearbysearch/{output}")
     Call<ATMQueryResult> getNearbyFilteredATMs(
             @Path("output") String output,
             @Query("location") String location,

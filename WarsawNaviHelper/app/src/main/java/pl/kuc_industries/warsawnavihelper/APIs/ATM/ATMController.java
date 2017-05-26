@@ -20,7 +20,7 @@ public class ATMController implements Callback<ATMQueryResult> {
     private static final String TAG = "ATMController";
 
     private static final String BASE_URL = "https://maps.googleapis.com/maps/api/place/";
-    private static final String OUTPUT = "json";
+    private static final String OUTPUT_TYPE = "json";
     private static final String TYPE = "atm";
 
     private IAtmAPI mAtmAPI;
@@ -63,14 +63,14 @@ public class ATMController implements Callback<ATMQueryResult> {
     public void getATMs(Location location, int radius) {
         String strLoc = location.getLatitude() + "," + location.getLongitude();
         Call<ATMQueryResult> call =
-                mAtmAPI.getNearbyATMs(OUTPUT, strLoc, radius, TYPE, Constants.PLACES_API_KEY);
+                mAtmAPI.getNearbyATMs(OUTPUT_TYPE, strLoc, radius, TYPE, Constants.PLACES_API_KEY);
         call.enqueue(this);
     }
 
     public void getFilteredATMs(Location location, int radius, String filter) {
         String strLoc = location.getLatitude() + "," + location.getLongitude();
         Call<ATMQueryResult> call =
-                mAtmAPI.getNearbyFilteredATMs(OUTPUT, strLoc, radius, filter, TYPE, Constants.PLACES_API_KEY);
+                mAtmAPI.getNearbyFilteredATMs(OUTPUT_TYPE, strLoc, radius, filter, TYPE, Constants.PLACES_API_KEY);
         call.enqueue(this);
     }
 }
