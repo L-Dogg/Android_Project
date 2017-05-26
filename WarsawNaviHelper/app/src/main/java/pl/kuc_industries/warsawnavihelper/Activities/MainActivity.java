@@ -56,8 +56,6 @@ import com.mikepenz.materialdrawer.interfaces.OnCheckedChangeListener;
 import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondaryDrawerItem;
 import com.mikepenz.materialdrawer.model.SecondarySwitchDrawerItem;
-import com.mikepenz.materialdrawer.model.SecondaryToggleDrawerItem;
-import com.mikepenz.materialdrawer.model.SwitchDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.io.IOException;
@@ -745,7 +743,7 @@ public class MainActivity extends AppCompatActivity
         public VehicleItemRenderer(Context context, GoogleMap map, ClusterManager<VehicleItem> clusterManager) {
             super(context, map, clusterManager);
 
-            View multiProfile = getLayoutInflater().inflate(R.layout.vehicle_marker, null);
+            View multiProfile = getLayoutInflater().inflate(R.layout.cluster_marker, null);
             mClusterIconGenerator.setContentView(multiProfile);
             mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
 
@@ -783,7 +781,7 @@ public class MainActivity extends AppCompatActivity
                         getDrawable(R.drawable.temporary_tram_splash_cluster);
 
             mClusterImageView.setImageDrawable(d);
-            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+            Bitmap icon = mClusterIconGenerator.makeIcon();
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
         }
 
@@ -804,7 +802,7 @@ public class MainActivity extends AppCompatActivity
         public AtmItemRenderer(Context context, GoogleMap map, ClusterManager<AtmItem> clusterManager) {
             super(context, map, clusterManager);
 
-            View multiProfile = getLayoutInflater().inflate(R.layout.vehicle_marker, null);
+            View multiProfile = getLayoutInflater().inflate(R.layout.cluster_marker, null);
             mClusterIconGenerator.setContentView(multiProfile);
             mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
 
@@ -835,7 +833,7 @@ public class MainActivity extends AppCompatActivity
             Drawable d = getDrawable(R.mipmap.atm_cluster);
 
             mClusterImageView.setImageDrawable(d);
-            Bitmap icon = mClusterIconGenerator.makeIcon(String.valueOf(cluster.getSize()));
+            Bitmap icon = mClusterIconGenerator.makeIcon();
             markerOptions.icon(BitmapDescriptorFactory.fromBitmap(icon));
         }
 
@@ -857,7 +855,7 @@ public class MainActivity extends AppCompatActivity
         public VeturiloItemRenderer(Context context, GoogleMap map, ClusterManager<VeturiloItem> clusterManager) {
             super(context, map, clusterManager);
 
-            View multiProfile = getLayoutInflater().inflate(R.layout.station_marker, null);
+            View multiProfile = getLayoutInflater().inflate(R.layout.cluster_marker, null);
             mClusterIconGenerator.setContentView(multiProfile);
             mClusterImageView = (ImageView) multiProfile.findViewById(R.id.image);
 
